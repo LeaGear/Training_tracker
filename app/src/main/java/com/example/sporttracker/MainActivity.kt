@@ -1,7 +1,10 @@
 package com.example.sporttracker
 
+import android.R.attr.onClick
 import android.content.Context
+import android.icu.number.NumberFormatter
 import android.os.Bundle
+import android.widget.CalendarView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
@@ -48,29 +52,138 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 
 import com.example.sporttracker.ui.components.AddSubtractButtons
 import com.example.sporttracker.ui.components.RecordButton
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel: TrainingViewModel = viewModel()
+            val viewModelWorkout: WorkoutViewModel = viewModel()
             // Обернем в тему, чтобы текст выглядел правильно
             MaterialTheme {
-                PushUpCounterScreen(viewModel)
+                //PushUpCounterScreen(viewModel)
+                MainScreen(viewModelWorkout)
             }
         }
     }
 }
 
+@Composable
+fun MainScreen(viewModelWorkout: WorkoutViewModel){
+    val pagerState = rememberPagerState(
+        initialPage = 1,
+        pageCount = {3})
+
+    Box(modifier = Modifier.fillMaxSize()){
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ){page ->
+            when(page){
+                0 -> HistoryCalendarScreen(viewModelWorkout)
+                1 -> PushUpCounterScreen(viewModelWorkout)
+                2 -> StatScreen()
+            }
+        }
+    }
+}
+@Composable
+fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
+    val sets by viewModel.setsForSelectedDate.collectAsState(initial = emptyList())
+    val total = sets.sumOf { it.reps }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Заголовок с суммой за выбранный день
+        val MyCustomFontFamily = FontFamily(
+            Font(R.font.montserrat_regular, FontWeight.Normal),
+            Font(R.font.montserrat_bold, FontWeight.Bold),
+            Font(R.font.montserrat_black, FontWeight.Black)
+        )
+
+
+        // Виджет календаря
+        AndroidView(
+            factory = { context ->
+                CalendarView(context).apply {
+                    setOnDateChangeListener { _, year, month, dayOfMonth ->
+                        val cal = Calendar.getInstance()
+                        cal.set(year, month, dayOfMonth)
+                        viewModel.onDateSelected(cal.timeInMillis)
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFFBAC5D), // Чуть светлее сверху
+                            Color(0xFFF28B31)  // Чуть темнее снизу
+                        )
+                    )
+                ),
+            //elevation = CardDefaults.cardElevation(2.dp),
+            contentAlignment = Alignment.Center
+        ){
+            Text(
+                text = "За этот день: $total",
+                fontFamily = MyCustomFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                color = Color.White
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Список упражнений за этот день
+        LazyColumn {
+            items(sets) { workoutSet ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Text("Сделано", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(" -> ", color = Color.Gray)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("${workoutSet.reps} повт.")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StatScreen(){
+
+}
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PushUpCounterScreen(viewModel : TrainingViewModel) {
+fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val haptic = LocalHapticFeedback.current
@@ -80,15 +193,15 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
         Font(R.font.montserrat_bold, FontWeight.Bold),
         Font(R.font.montserrat_black, FontWeight.Black)
     )
-    // Логика даты для ключа
-    val countKey = "count_${LocalDate.now()}"
+    val sets by viewModel.todaySets.collectAsState(initial = emptyList())
+    val total = sets.sumOf { it.reps }
 
-    var total = viewModel.todayTotal
-    var countNow = viewModel.currentInputValue
+    var count by remember {mutableIntStateOf(0)} //var total = viewModel.todayTotal
+    //var countNow = viewModel.currentInputValue
 
-    var editingValue by remember { mutableStateOf(countNow.toString()) }
-    LaunchedEffect(countNow) {
-        editingValue = countNow.toString()
+    var editingValue by remember { mutableStateOf(count.toString()) }
+    LaunchedEffect(count) {
+        editingValue = count.toString()
     }
 
 
@@ -117,7 +230,7 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Text(text = "$countNow",
+                Text(text = "$count",
                     fontFamily = MyCustomFontFamily,
                     fontWeight = FontWeight.Black,
                     fontSize = 55.sp,
@@ -149,23 +262,24 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                itemsIndexed(viewModel.sets){ index, value ->
+                items(sets){value ->
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .background(Color(0xFFCADCED), RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .border(3.dp,
                                 Color(0xFfB1CBE5),
                                 RoundedCornerShape(8.dp))
                             .combinedClickable(
                                 onClick = { Toast.makeText(context, "Удерживайте для удаления", Toast.LENGTH_SHORT).show()},
-                                onLongClick = {viewModel.removeSetAt(index)
+                                onLongClick = {viewModel.deleteSetById(value.id)
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)}
                             ),
                         contentAlignment = Alignment.Center
                     ){
                         Text(
-                            text = value.toString(),
+                            text = value.reps.toString(),
                             fontFamily = MyCustomFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
@@ -187,7 +301,7 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
                 .border(width = 2.dp,
                     color = Color.Red,
                     shape = CircleShape)
-                .clickable{viewModel.currentNull()},
+                .clickable{count = 0},
             contentAlignment = Alignment.Center
         ){
             Image(
@@ -239,11 +353,11 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
                     if (newValue.all {it.isDigit()} && newValue.length <= 4){
                         editingValue = newValue
                         if (newValue.isEmpty()){
-                            viewModel.currentNull()
+                            count = 0
                         }
                         else {
                             newValue.toIntOrNull()?.let { parsed ->
-                                viewModel.currentActual(parsed)
+                                count = parsed
                             }
                         }
                     }
@@ -271,8 +385,8 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
         AddSubtractButtons(
             leftText = "-10",
             rightText = "+10",
-            onLeftClick = {viewModel.changeInput(-10)},
-            onRightClick = {viewModel.changeInput(10)},
+            onLeftClick = {count = maxOf(0,  count - 10)},
+            onRightClick = {count += 10},
             modifier = Modifier
                 .align(Alignment.BottomCenter) // Прижимаем к центру низа
                 .padding(bottom = 200.dp)
@@ -281,8 +395,8 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
         AddSubtractButtons(
             leftText = "-5",
             rightText = "+5",
-            onLeftClick = {viewModel.changeInput(-5)},
-            onRightClick = {viewModel.changeInput(5)},
+            onLeftClick = {count = maxOf(0, count - 5)},
+            onRightClick = {count += 5},
             modifier = Modifier
                 .align(Alignment.BottomCenter) // Прижимаем к центру низа
                 .padding(bottom = 150.dp),
@@ -291,7 +405,7 @@ fun PushUpCounterScreen(viewModel : TrainingViewModel) {
         //Кнопка записи - НИЖНЯЯ
         RecordButton(
             mainText = "ЗАПИСАТЬ",
-            mainClick =  {viewModel.recordSet()},
+            mainClick =  {viewModel.recordSet(count)},
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 88.dp)

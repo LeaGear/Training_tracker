@@ -1,6 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp") // Добавляем сюда
+}
+
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            // Это отключит строгие проверки нового компилятора для KSP
+            optIn("org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI")
+        }
+    }
 }
 
 android {
@@ -37,13 +47,23 @@ android {
     buildFeatures {
         compose = true
     }
+    ksp {
+        arg("room.generateKotlin", "false")
+    }
 }
 
 dependencies {
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    // Если используешь Kotlin Symbol Processing (KSP), то:
+    ksp("androidx.room:room-compiler:$room_version")
     // Check for this line specifically:
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     // (Optional) If you are using late-model Compose versions:
     implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.compose.foundation:foundation:1.6.0") // или актуальная версия
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -52,6 +72,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
