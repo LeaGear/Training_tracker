@@ -53,31 +53,29 @@ android {
 }
 
 dependencies {
+    // Room
     val room_version = "2.6.1"
-
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    // Если используешь Kotlin Symbol Processing (KSP), то:
     ksp("androidx.room:room-compiler:$room_version")
-    // Check for this line specifically:
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
-    // (Optional) If you are using late-model Compose versions:
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.compose.foundation:foundation:1.6.0") // или актуальная версия
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Compose - ФИКСИРУЕМ ВЕРСИЮ 1.7.0+, чтобы был IndicationNodeFactory
+    val compose_version = "1.7.0"
+    implementation("androidx.compose.ui:ui:$compose_version")
+    implementation("androidx.compose.foundation:foundation:$compose_version")
+    implementation("androidx.compose.material3:material3:1.3.0") // Material 1.3 требует Foundation 1.7
+    implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+    debugImplementation("androidx.compose.ui:ui-tooling:$compose_version")
+
+    // Календарь - ставим актуальную версию для Compose 1.7
+    implementation("com.kizitonwose.calendar:compose:2.6.0")
+
+    // Остальное
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+
+    // ВАЖНО: Закомментируй или удали ВСЕ строки с libs.androidx.compose...
+    // и ОБЯЗАТЕЛЬНО удали/закомментируй BOM:
+    // implementation(platform(libs.androidx.compose.bom))
 }

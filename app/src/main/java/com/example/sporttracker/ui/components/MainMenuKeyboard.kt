@@ -19,11 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sporttracker.ui.theme.AppTheme
 
 
 @Composable
@@ -46,11 +46,8 @@ fun AddSubtractButtons(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFDCB07A),
-                        shape = RoundedCornerShape(12.dp)
-                    ),
+                    .border(border = AppTheme.colors.primaryBorder,
+                            shape = RoundedCornerShape(12.dp)),
                 onClick = action,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(0.dp),
@@ -59,11 +56,7 @@ fun AddSubtractButtons(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))
-                            )
-                        ),
+                        .background(brush = AppTheme.colors.primaryButton),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -89,12 +82,7 @@ fun RecordButton(
         modifier = modifier
             .size(width = 250.dp, height = 60.dp)
             .clickable { mainClick() } // Теперь клик работает точно по форме полукруга
-            .background(brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color(0xFFFBAC5D), // Чуть светлее сверху
-                    Color(0xFFF28B31)  // Чуть темнее снизу
-                )
-            ))
+            .background(brush = AppTheme.colors.primaryButton)
             .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {

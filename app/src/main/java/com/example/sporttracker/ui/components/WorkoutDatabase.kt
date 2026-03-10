@@ -10,12 +10,14 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Entity(tableName = "workout_history")
 data class WorkoutSet(
     @PrimaryKey(autoGenerate = true) val id: Int =0,
     val date: Long,
-    val reps: Int
+    val reps: Int,
+    val target: Int
 )
 
 @Dao
@@ -31,6 +33,9 @@ interface WorkoutDao {
 
     @Query("SELECT SUM(reps) FROM workout_history WHERE date = :date")
     fun getSumByDate(date: Long): Flow<Int> // Может вернуть null, если записей нет
+
+    //@Query("SELECT target FROM workout_history WHERE date = :date")
+    //fun getDayTarget(date: Long)
 }
 
 @Database(entities = [WorkoutSet::class], version = 1)
@@ -47,7 +52,9 @@ abstract class WorkoutDatabase: RoomDatabase(){
                     context.applicationContext,
                     WorkoutDatabase::class.java,
                     "workout_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // ДОБАВЬ ЭТУ СТРОКУ
+                    .build()
                 INSTANCE = instance
                 instance
             }
