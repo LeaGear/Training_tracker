@@ -2,60 +2,137 @@ package com.example.sporttracker.ui.components
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.collections.emptyList
 
-class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
-    private val dao = WorkoutDatabase.getDatabase(application).workoutDao()
+class WorkoutViewModel(private val dao: WorkoutDao) : ViewModel(){
 
+    private val _selectedDate = MutableStateFlow(getStartOfDay(System.currentTimeMillis()))
 
-    // 1. Поток данных для главного экрана (только за СЕГОДНЯ)
-    val todaySets: Flow<List<WorkoutSet>> = dao.getSetsByDate(getStartOfDay(System.currentTimeMillis()))
-    // Автоматически обновляемый список подходов для выбранной даты
-    val selectedDateMillis = MutableStateFlow(
-        LocalDate.now()
-            .atStartOfDay(ZoneId.systemDefault())
-            .toInstant()
-            .toEpochMilli()
+    val exerciseName = MutableStateFlow("Заглушка")
+
+    val availableExercises: StateFlow<List<Exercise>> = dao.getAllExercises()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val selectedDate: StateFlow<Long> = _selectedDate.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val setsForSelectedDate: Flow<List<ExerciseSet>> = combine(
+        _selectedDate,
+        exerciseName
+    ){date, name -> date to name }
+        .flatMapLatest {(date, name) ->
+            dao.getWorkoutWithSets(date, name).map{ it?.sets ?: emptyList()}
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val targetForSelectedDate: Flow<Int> = combine(
+        _selectedDate,
+        exerciseName
+    ) { date, name -> date to name }
+        .flatMapLatest { (date, name) ->
+            // Ищем запись о тренировке за конкретную дату и упражнение
+            dao.getWorkoutWithSets(date, name).map { workoutWithSets ->
+                // Если тренировка найдена — берем её цель, иначе 0
+                workoutWithSets?.workout?.target ?: 0
+            }
+        }
+    // В WorkoutViewModel.kt
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val todayWorkout = combine(_selectedDate, exerciseName) { date, name ->
+        date to name
+    }.flatMapLatest { (date, name) ->
+        // Вызываем запрос к базе. Room сам вернет новый Flow при изменении данных
+        dao.getWorkoutWithSets(date, name)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
     )
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedDate: StateFlow<LocalDate> = _selectedDate
-
-    // Сеты подгружаются автоматически при смене даты
-    val setsForSelectedDate = _selectedDate.flatMapLatest { date ->
-        val millis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        dao.getSetsByDate(millis)
+    fun changeExercise(name:String){
+        exerciseName.value = name
     }
 
-    // 3. Запись (сразу в базу)
-    fun recordSet(reps: Int){
+    fun changeDate(newDate: Long){
+        _selectedDate.value = getStartOfDay(newDate)
+    }
+
+    fun getTodayWorkout(name: String): StateFlow<WorkoutWithSets?>{
+        val today = getStartOfDay(System.currentTimeMillis())
+        return dao.getWorkoutWithSets(today, name)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null
+        )
+
+    }
+
+    fun addSet(exerciseName: String, repsCount:Int, target: Int){
         viewModelScope.launch(Dispatchers.IO){
-            dao.insertSet(WorkoutSet(
-                date = getStartOfDay((System.currentTimeMillis())),
-                reps = reps,
-                target = 500
-            ))
+            val today = getStartOfDay(System.currentTimeMillis())
+
+            var workoutId = dao.getWorkoutIdOnce(today, exerciseName)
+
+            if (workoutId == null){
+                val newWorkout =Workout(
+                    exerciseName = exerciseName,
+                    date = today,
+                    target  = target
+                )
+                workoutId = dao.insertWorkout(newWorkout).toInt()
+            }
+
+            val newSet = ExerciseSet(
+                parentWorkoutId = workoutId!!,
+                reps = repsCount
+            )
+            dao.insertSet(newSet)
         }
     }
-    fun deleteSetById(id: Int) {
+
+    fun deleteSetById(setId: Int){
+        viewModelScope.launch(Dispatchers.IO){
+            dao.deleteSetById(setId)
+        }
+    }
+
+    fun addExercise(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteById(id) // Тот самый запрос DELETE FROM ... WHERE id = :id
+            dao.insertExercise(Exercise(name))
         }
     }
 
-    //All times in one day
-    fun totalInDay(date: Long): Flow<Int> {
-        return dao.getSumByDate(getStartOfDay(date))
+    // Удаление
+    fun removeExercise(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteExercise(Exercise(name))
+        }
     }
+}
 
-    fun onDateSelected(date: LocalDate) {
-        _selectedDate.value = date
+class WorkoutViewModelFactory(private val dao: WorkoutDao) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(WorkoutViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return WorkoutViewModel(dao) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

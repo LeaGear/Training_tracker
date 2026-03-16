@@ -1,5 +1,6 @@
 package com.example.sporttracker.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -19,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sporttracker.R
 import com.example.sporttracker.ui.theme.AppTheme
+import com.example.sporttracker.ui.theme.SportTrackerTheme
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -39,11 +43,7 @@ fun SetTrackerCalendar(
     val startMonth = remember { currentMonth.minusMonths(50) }
     val endMonth = remember { currentMonth.plusMonths(50) }
     val daysOfWeek = remember { daysOfWeek(firstDayOfWeek = DayOfWeek.MONDAY) }
-    val myCustomFontFamily = FontFamily(
-        Font(R.font.montserrat_regular, FontWeight.Normal),
-        Font(R.font.montserrat_bold, FontWeight.Bold),
-        Font(R.font.montserrat_black, FontWeight.Black)
-    )
+
     val state = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
@@ -60,84 +60,130 @@ fun SetTrackerCalendar(
         // Заголовок месяца (например: Март 2026)
         val visibleMonth = state.firstVisibleMonth.yearMonth
         val monthName = visibleMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("ru"))
-        val text = "${monthName.replaceFirstChar { it.uppercase() }} ${visibleMonth.year}"
+
+        //Месяц и год для заголовка
+        val monthYearText = "${monthName.replaceFirstChar { it.uppercase() }} ${visibleMonth.year}"
+
+        //Заголовок календаря с информацией про год и месяц
         Box(modifier = Modifier
             .size(height = 40.dp, width = 180.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                brush = AppTheme.colors.primaryButton,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .border(border = AppTheme.colors.primaryBorder, shape = RoundedCornerShape(20.dp)),
+            .clip(AppTheme.shapes.mainShape)
+            .background(AppTheme.colors.primaryButton, AppTheme.shapes.mainShape)
+            .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
             contentAlignment = Alignment.Center
         ){
             Text(
-                text = text,
-                fontFamily = myCustomFontFamily,
+                text = monthYearText,
+                style = AppTheme.fonts.montBold,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
 
-        HorizontalCalendar(
-            state = state,
-            dayContent = { day ->
-                DayElement(
-                    day = day,
-                    isSelected = selectedDate == day.date,
-                    onClick = { onDateSelected(it.date) }
-                )
-            },
-            monthHeader = {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    daysOfWeek.forEach { dayOfWeek ->
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            fontSize = 12.sp,
-                            color = Color.Gray
+        //Задний фон календаря, пока НЕУДАЧНЫЙ вариант
+        Box(
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+                    .clip(AppTheme.shapes.mainShape)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFFBAC5D).copy(alpha = 0.1f),
+                                Color(0xFFF28B31).copy(alpha = 0.1f)
+                            )
                         )
+                    )
+                    .blur(20.dp)
+                    .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+            )
+
+            HorizontalCalendar(
+                state = state,
+                dayContent = { day ->
+                    DayElement(
+                        day = day,
+                        isSelected = selectedDate == day.date,
+                        onClick = { onDateSelected(it.date) }
+                    )
+                },
+                //Верхняя часть калнедаря гле показаны дни недели
+                monthHeader = {
+                    Row(modifier = Modifier.fillMaxWidth().offset(y = 6.dp)) {
+                        daysOfWeek.forEach { dayOfWeek ->
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).replaceFirstChar { it.uppercase() },
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                style = AppTheme.fonts.montBlack,
+                                fontSize = 12.sp,
+                                color = Color.Black
+                            )
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
+
     }
 }
 
 @Composable
 fun DayElement(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+    //Обьект кнопки даты
     Box(
         modifier = Modifier
             .aspectRatio(1f) // Квадратные ячейки
             .padding(4.dp)
+            .clip(CircleShape)
             .clickable(
                 enabled = day.position == DayPosition.MonthDate,
                 onClick = { onClick(day) }
             ),
         contentAlignment = Alignment.Center
     ) {
+        //Закрашывание цифры в зависиомсти от даты
         val textColor = when {
             isSelected -> Color.White
             day.position != DayPosition.MonthDate -> Color.LightGray
             else -> Color.Black
         }
+        //Цвет ячейки в зависимости от результата за день
 
+        val dateResult = when{
+            isSelected -> Color.Green //Вот тут логика Тотал больше таргета
+            else -> Color.Red
+        }
+
+        //Цвет выделенной даты
         if (isSelected) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFF9800), CircleShape) // Твой оранжевый акцент
+                    .background(brush = AppTheme.colors.primaryButton, CircleShape)
+                    .border(width = 2.dp, color = Color(0xFFFF840B), CircleShape)// Твой оранжевый акцент
             )
         }
-
+        //Цвет остальных дат
+        else{
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFA4C3E0).copy(alpha = 0.4f), CircleShape)
+                    //.border(width = 2.dp, color = Color(0xFFFF840B), CircleShape)// Твой оранжевый акцент
+            )
+        }
+        //Дата в ячейке календаря
         Text(
             text = day.date.dayOfMonth.toString(),
             color = textColor,
-            fontSize = 14.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            style = AppTheme.fonts.montBold,
+            fontSize = 16.sp,
+            fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold
         )
     }
 }

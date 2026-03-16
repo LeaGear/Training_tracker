@@ -15,7 +15,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Surface
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.sporttracker.ui.components.WorkoutDatabase
 import com.example.sporttracker.ui.components.WorkoutViewModel
+import com.example.sporttracker.ui.components.WorkoutViewModelFactory
 
 
 import com.example.sporttracker.ui.screens.HistoryCalendarScreen
@@ -26,9 +29,16 @@ import com.example.sporttracker.ui.theme.SportTrackerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // 1. Инициализируем базу данных
+        val database = WorkoutDatabase.getDatabase(applicationContext)
+        // 2. Создаем фабрику
+        val factory = WorkoutViewModelFactory(database.workoutDao())
+
         setContent {
-            val viewModelWorkout: WorkoutViewModel = viewModel()
+            // 3. Передаем фабрику во вью модель
+            val viewModelWorkout: WorkoutViewModel = viewModel(factory = factory)
             SportTrackerTheme(){
                 Box(modifier = Modifier.fillMaxSize()){
                     Image(
@@ -58,7 +68,6 @@ fun MainScreen(viewModelWorkout: WorkoutViewModel){
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = {3})
-
     Box(modifier = Modifier.fillMaxSize()){
         HorizontalPager(
             state = pagerState,

@@ -46,12 +46,11 @@ fun AddSubtractButtons(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .border(border = AppTheme.colors.primaryBorder,
-                            shape = RoundedCornerShape(12.dp)),
+                    .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
                 onClick = action,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = AppTheme.shapes.mainShape
             ) {
                 Box(
                     modifier = Modifier

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,8 +48,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.sp
 import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.WorkoutViewModel
 import com.example.sporttracker.ui.components.AddSubtractButtons
+import com.example.sporttracker.ui.components.CreateWorkoutDialog
+import com.example.sporttracker.ui.components.DropdownMenu
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.components.RecordButton
 
@@ -67,21 +69,18 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val focusManager = LocalFocusManager.current
     val haptic = LocalHapticFeedback.current
 
-    val MyCustomFontFamily = FontFamily(
-        Font(R.font.montserrat_regular, FontWeight.Normal),
-        Font(R.font.montserrat_bold, FontWeight.Bold),
-        Font(R.font.montserrat_black, FontWeight.Black)
-    )
-    val sets by viewModel.todaySets.collectAsState(initial = emptyList())
-    val total = sets.sumOf { it.reps }
-
-    var count by remember {mutableIntStateOf(0)} //var total = viewModel.todayTotal
-    //var countNow = viewModel.currentInputValue
-
+    var count by remember {mutableIntStateOf(0)}
+    var screenTarget by remember {mutableIntStateOf(0)}
+    var exerciseName by remember {mutableStateOf("Push")}
     var editingValue by remember { mutableStateOf(count.toString()) }
     LaunchedEffect(count) {
         editingValue = count.toString()
     }
+
+    val workoutData by viewModel.todayWorkout.collectAsState()
+    val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
+    val currentSets = workoutData?.sets ?: emptyList()
+
 
 
     // ГЛАВНЫЙ ЭКРАН (Фон)
@@ -94,14 +93,25 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             }, // Глубокий темный фон
         contentAlignment = Alignment.Center
     ) {
+
+        DropdownMenu(viewModel = viewModel,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 795.dp)
+                .size(width = 300.dp, height = 40.dp)
+                //.fillMaxWidth()
+                //.height(40.dp)
+            )
+
+
         //Окно счета
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 570.dp)
+                .padding(bottom = 540.dp)
                 .size(240.dp)
                 .clip(CircleShape)
-                .border(border = AppTheme.colors.primaryBorder,
+                .border(border = AppTheme.shapes.primaryBorder,
                     shape = CircleShape)
                 .background(brush = AppTheme.colors.primaryButton),
             contentAlignment = Alignment.Center
@@ -110,14 +120,12 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text(text = "$count",
-                    fontFamily = MyCustomFontFamily,
-                    fontWeight = FontWeight.Black,
+                    style = AppTheme.fonts.montBlack,
                     fontSize = 55.sp,
                     color = Color.White)
                 Spacer(modifier = Modifier.padding(10.dp))
-                Text("Today total: $total",
-                    fontFamily = MyCustomFontFamily,
-                    fontWeight = FontWeight.Bold,
+                Text("Today total: $currentTotal",
+                    style = AppTheme.fonts.montBold,
                     fontSize = 20.sp,
                     color = Color.White)
             }
@@ -127,11 +135,11 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 380.dp)
+                .padding(bottom = 350.dp)
                 .size(width = 309.dp, height = 156.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(AppTheme.shapes.mainShape)
                 .background(Color.Transparent)
-                .border(4.dp, Color(0xFfB1CBE5), RoundedCornerShape(10.dp))
+                .border(4.dp, Color(0xFfB1CBE5), AppTheme.shapes.mainShape)
         ){
             LazyVerticalGrid(
                 columns = GridCells.Fixed(6),
@@ -141,18 +149,19 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(sets){value ->
+                items(currentSets){value ->
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
-                            .background(brush = AppTheme.colors.primaryButton,
-                                shape = RoundedCornerShape(8.dp))
+                            .background(AppTheme.colors.primaryButton,
+                                RoundedCornerShape(8.dp))
                             .clip(RoundedCornerShape(8.dp))
                             .border(3.dp,
                                 Color(0xFfB1CBE5),
                                 RoundedCornerShape(8.dp))
                             .combinedClickable(
-                                onClick = { Toast.makeText(context, "Удерживайте для удаления", Toast.LENGTH_SHORT).show()},
+                                onClick = { Toast.makeText(context, "Удерживайте для удаления",
+                                    Toast.LENGTH_SHORT).show()},
                                 onLongClick = {viewModel.deleteSetById(value.id)
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)}
                             ),
@@ -160,8 +169,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     ){
                         Text(
                             text = value.reps.toString(),
-                            fontFamily = MyCustomFontFamily,
-                            fontWeight = FontWeight.Bold,
+                            style = AppTheme.fonts.montBold,
                             fontSize =  if (value.reps > 100) 17.sp else 20.sp,
                             color = Color.White
                         )
@@ -174,7 +182,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 320.dp)
+                .padding(bottom = 310.dp)
                 .offset(x = 115.dp)
                 .size(30.dp)
                 .clip(CircleShape)
@@ -196,9 +204,9 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 250.dp) // Ширина в 2 раза больше высоты
+                .padding(bottom = 240.dp) // Ширина в 2 раза больше высоты
                 .size(width = 250.dp, height = 80.dp)
-                .border(border = AppTheme.colors.primaryBorder,
+                .border(border = AppTheme.shapes.primaryBorder,
                     shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
                 .clip(
                     RoundedCornerShape(
@@ -262,7 +270,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             onRightClick = {count += 10},
             modifier = Modifier
                 .align(Alignment.BottomCenter) // Прижимаем к центру низа
-                .padding(bottom = 200.dp)
+                .padding(bottom = 190.dp)
         )
         //Кнопки + - 5
         AddSubtractButtons(
@@ -272,17 +280,17 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             onRightClick = {count += 5},
             modifier = Modifier
                 .align(Alignment.BottomCenter) // Прижимаем к центру низа
-                .padding(bottom = 150.dp),
+                .padding(bottom = 140.dp),
         )
 
         //Кнопка записи - НИЖНЯЯ
         RecordButton(
             mainText = "ЗАПИСАТЬ",
-            mainClick =  {viewModel.recordSet(count)},
+            mainClick =  {viewModel.addSet(exerciseName, count, screenTarget)},
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 88.dp)
-                .border(border = AppTheme.colors.primaryBorder, // Тонкий светлый блик сверху
+                .padding(bottom = 78.dp)
+                .border(border = AppTheme.shapes.primaryBorder, // Тонкий светлый блик сверху
                     shape = RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp)
                 )
                 .clip(
