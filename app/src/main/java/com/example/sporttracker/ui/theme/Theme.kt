@@ -20,6 +20,6 @@ fun SportTrackerTheme(
         LocalAppShapes provides shapes,
         LocalAppFonts provides fonts // Добавляем шрифты
     ){
-        MaterialTheme(content = content)// Можно также настроить стандартные цвета Material3 здесь
+        MaterialTheme(content = content)
     }
 }

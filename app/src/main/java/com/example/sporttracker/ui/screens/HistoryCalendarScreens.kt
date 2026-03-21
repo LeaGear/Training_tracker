@@ -26,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.DropdownMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
@@ -39,6 +41,8 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     var showTargetDialog by remember { mutableStateOf(false) }
 
 
+    val exercises by viewModel.availableExercises.collectAsState()
+    val currentExercise by viewModel.exerciseName.collectAsState()
     val allWorkouts by viewModel.workoutByDate.collectAsState()
     val selectedLocalDate by viewModel.selectedLocalDate.collectAsState()
     val workoutData by viewModel.todayWorkout.collectAsState()
@@ -71,7 +75,15 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             workoutByDate = allWorkouts
         )
 
-        DropdownMenu(viewModel = viewModel,
+        DropdownMenu(
+            exercises = exercises,
+            currentExercise = currentExercise,
+            onExerciseSelected = { viewModel.changeExercise(it) },
+            onExerciseDeleted = { viewModel.removeExercise(it) },
+            onExerciseAdded = {
+                viewModel.addExercise(it)
+                viewModel.changeExercise(it)
+            },
             modifier = Modifier
                 .width(380.dp)
                 .height(40.dp),
@@ -103,13 +115,13 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "Сделано:",
+                        text = stringResource(R.string.box_makes),
                         style = AppTheme.fonts.montBold,
                         fontSize = 26.sp,
                         color = Color.White
                     )
                     Text(
-                        text = "$currentTotal",
+                        text = currentTotal.toString(),
                         style = AppTheme.fonts.montBold,
                         fontSize = 26.sp,
                         color = Color.White
@@ -133,13 +145,13 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     modifier = Modifier.fillMaxSize()
                 ){
                     Text(
-                        text = "Цель:",
+                        text = stringResource(R.string.box_target),
                         style = AppTheme.fonts.montBold,
                         fontSize = 26.sp,
                         color = Color.White
                     )
                     Text(
-                        text = "$target",
+                        text = target.toString(),
                         style = AppTheme.fonts.montBold,
                         fontSize = 26.sp,
                         color = Color.White
@@ -163,7 +175,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Сделано -> ${workoutSet.reps}",
+                        text = "${stringResource(R.string.str_for_reps)} -> ${workoutSet.reps}",
                         style = AppTheme.fonts.montBold,
                         fontSize = 26.sp,
                         color = Color.White)

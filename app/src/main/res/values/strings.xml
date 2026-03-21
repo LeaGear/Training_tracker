@@ -9,7 +9,10 @@
     <string name="btn_save">Записать</string>
     <string name="btn_cancel">Отмена</string>
     <string name="box_makes">Сделано: </string>
+    <string name="str_for_reps">Сделано</string>
     <string name="box_target">Цель: </string>
     <string name="hold_to_delete">Удерживайте для удаления</string>
     <string name="hand_entering">Введите вручную: </string>
+    <string name="btn_add_exercise">+ Добавить упражнение</string>
+    <string name="description_delete">Удалить</string>
 </resources>

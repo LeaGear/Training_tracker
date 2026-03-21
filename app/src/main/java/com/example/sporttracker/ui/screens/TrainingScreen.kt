@@ -76,6 +76,9 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
 
     val count by viewModel.count.collectAsState()
 
+    val exercises by viewModel.availableExercises.collectAsState()
+    val currentExercise by viewModel.exerciseName.collectAsState()
+
     val workoutData by viewModel.todayWorkout.collectAsState()
     val targetInDay = workoutData?.workout?.target ?: 0
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
@@ -109,11 +112,19 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             DropdownMenu(
-                viewModel = viewModel,
+                exercises = exercises,
+                currentExercise = currentExercise,
+                onExerciseSelected = { viewModel.changeExercise(it) },
+                onExerciseDeleted = { viewModel.removeExercise(it) },
+                onExerciseAdded = {
+                    viewModel.addExercise(it)
+                    viewModel.changeExercise(it)
+                },
                 modifier = Modifier
                     .size(width = 300.dp, height = 40.dp),
                 menuModifier = Modifier.width(300.dp)
             )
+
             Box(
                 modifier = Modifier
                     .size(width = 140.dp, height = 80.dp)
@@ -206,11 +217,12 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     }
                 }
             }
+
             Box(
                 modifier = Modifier
                     .size(width = 309.dp, height = 156.dp)
                     .clip(AppTheme.shapes.mainShape)
-                    .border(4.dp, Color(0xFfB1CBE5), AppTheme.shapes.mainShape)
+                    .border(4.dp, AppTheme.colors.repsBorder, AppTheme.shapes.mainShape)
             ) {
                 val holdToDeleteText = stringResource(R.string.hold_to_delete)
                 LazyVerticalGrid(
@@ -226,7 +238,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                             modifier = Modifier
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(8.dp))
-                                .border(3.dp, Color(0xFfB1CBE5), RoundedCornerShape(8.dp))
+                                .border(3.dp, AppTheme.colors.repsBorder, RoundedCornerShape(8.dp))
                                 .background(AppTheme.colors.primaryButton)
                                 .combinedClickable(
                                     onClick = {

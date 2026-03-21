@@ -97,7 +97,7 @@ abstract class WorkoutDatabase: RoomDatabase(){
                     WorkoutDatabase::class.java,
                     "workout_db"
                 )
-                    .fallbackToDestructiveMigration() // ДОБАВЬ ЭТУ СТРОКУ
+                    .fallbackToDestructiveMigration() // TODO: заменить на миграции перед релизом
                     .build()
                 INSTANCE = instance
                 instance

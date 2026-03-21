@@ -43,10 +43,9 @@ class WorkoutViewModel(
     // Форматированная дата — готовая строка для UI
     val formattedDate: StateFlow<String> = _selectedDate
         .map { date ->
-            // java.time вместо устаревшего SimpleDateFormat
-            val localDate = java.time.Instant
+            val localDate = Instant
                 .ofEpochMilli(date)
-                .atZone(java.time.ZoneId.systemDefault())
+                .atZone(ZoneId.systemDefault())
                 .toLocalDate()
             java.time.format.DateTimeFormatter
                 .ofPattern("dd.MM")
@@ -112,7 +111,7 @@ class WorkoutViewModel(
     fun removeExercise(name: String) {
         viewModelScope.launch {
             dao.deleteExercise(Exercise(name))
-            if (exerciseName.value == name){
+            if (_exerciseName.value == name){
                 val remaining = dao.getAllExercisesOnce()
                 val newName = remaining.lastOrNull()?.name ?: "Добавить"
                 _exerciseName.value = newName
@@ -132,8 +131,8 @@ class WorkoutViewModel(
     //Установить цель на день
     fun setTarget(target: Int) {
         viewModelScope.launch {
-            val today = selectedDate.value
-            val name = exerciseName.value
+            val today = _selectedDate.value
+            val name = _exerciseName.value
 
             val workoutId: Int? = dao.getWorkoutIdOnce(today, name)
             if (workoutId == null) {

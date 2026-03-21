@@ -22,9 +22,9 @@ val myCustomFontFamily = FontFamily(
 // Описываем структуру цветов
 data class AppColors(
     val primaryButton: Brush,
-    val testColor: Brush,
     val calendarHighlight: Color,
-    val primaryAccent : Color,
+    val primaryAccent: Color,
+    val repsBorder: Color,
 
     // Календарь — статус дня
     val calendarCompletedStart: Color,    // выполнено — градиент начало
@@ -41,8 +41,7 @@ data class AppColors(
 
     val calendarDefaultDay: Color,        // обычный день без цели
     val calendarSelectedBorder: Color,    // рамка выбранного дня
-    val calendarOutsideMonth: Color,      // дни не этого месяца
-// добавь сюда любые свои переменные
+    val calendarOtherMonths: Color
 )
 data class AppShapes(
     val primaryBorder: BorderStroke,
@@ -67,9 +66,9 @@ val LocalAppFonts = staticCompositionLocalOf<AppFonts> {
 }
 val LightPalette = AppColors(
     primaryButton = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
-    testColor = Brush.verticalGradient(colors = listOf(Color.Red, Color.Green)),
     calendarHighlight = Color(0xFFFF4081),
     primaryAccent = Color(0xFFFF840B),
+    repsBorder = Color(0xFFB1CBE5),
 
     calendarCompletedStart = Color(0xFF00FF1E),
     calendarCompletedEnd = Color(0xFF38A342),
@@ -85,13 +84,13 @@ val LightPalette = AppColors(
 
     calendarDefaultDay = Color(0xFFA4C3E0),
     calendarSelectedBorder = Color(0xFFFF840B),
-    calendarOutsideMonth = Color(0xFFBDBDBD)
+    calendarOtherMonths = Color(0xFF8D8D8D)
 )
 val DarkPalette = AppColors(
     primaryButton = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
-    testColor = Brush.verticalGradient(colors = listOf(Color.Red, Color.Green)),
     calendarHighlight = Color(0xFFFF79B0),
     primaryAccent = Color(0xFFFF840B),
+    repsBorder = Color(0xFFB1CBE5),
 
     calendarCompletedStart = Color(0xFF00CC18),
     calendarCompletedEnd = Color(0xFF2D8A36),
@@ -107,7 +106,7 @@ val DarkPalette = AppColors(
 
     calendarDefaultDay = Color(0xFF5C7A96),
     calendarSelectedBorder = Color(0xFFFF840B),
-    calendarOutsideMonth = Color(0xFF616161)
+    calendarOtherMonths = Color(0xFF8D8D8D)
 )
  val appShapes = AppShapes(
      primaryBorder = BorderStroke(width = 4.dp, color = Color(0xFFFF840B)),//DCB07A

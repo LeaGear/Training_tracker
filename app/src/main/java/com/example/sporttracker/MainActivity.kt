@@ -1,26 +1,26 @@
 package com.example.sporttracker
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sporttracker.ui.components.WorkoutDatabase
 import com.example.sporttracker.ui.components.WorkoutViewModel
 import com.example.sporttracker.ui.components.WorkoutViewModelFactory
-
-
 import com.example.sporttracker.ui.screens.HistoryCalendarScreen
 import com.example.sporttracker.ui.screens.PushUpCounterScreen
 import com.example.sporttracker.ui.screens.StatScreen
@@ -42,10 +42,10 @@ class MainActivity : ComponentActivity() {
             SportTrackerTheme(){
                 Box(modifier = Modifier.fillMaxSize()){
                     Image(
-                        painter = painterResource(id = R.drawable.bg), // Твоя картинка из res/drawable
+                        painter = painterResource(id = R.drawable.bg),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop // Важно: обрезает фото, чтобы оно заполнило весь Box без искажений
+                        contentScale = ContentScale.Crop
                     )
                     Surface(modifier = Modifier.fillMaxSize(),
                         color = Color.Transparent){
@@ -59,10 +59,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun setTarget(target: Int, date: Float){
 
-}
-@OptIn(ExperimentalFoundationApi::class) // Добавь это!
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(viewModelWorkout: WorkoutViewModel){
     val pagerState = rememberPagerState(
@@ -81,23 +79,3 @@ fun MainScreen(viewModelWorkout: WorkoutViewModel){
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

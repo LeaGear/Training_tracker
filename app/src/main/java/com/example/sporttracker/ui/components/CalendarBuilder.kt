@@ -58,7 +58,6 @@ fun SetTrackerCalendar(
 
     Column(modifier = Modifier
         .fillMaxWidth(),
-        //.statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
@@ -96,15 +95,7 @@ fun SetTrackerCalendar(
                     .height(350.dp)
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFFBAC5D).copy(alpha = 0.1f),
-                                Color(0xFFF28B31).copy(alpha = 0.1f)
-                            )
-                        )
-                    )
-                    //.blur(20.dp)
+                    .background(AppTheme.colors.calendarInProgressEnd.copy(alpha = 0.2f))
             )
 
             HorizontalCalendar(modifier = Modifier.padding(6.dp),
@@ -189,7 +180,7 @@ fun DayElement(
         //Закрашивание цифры в зависимости от даты
         val textColor = when {
             isSelected -> Color.White
-            day.position != DayPosition.MonthDate -> Color.LightGray
+            day.position != DayPosition.MonthDate -> AppTheme.colors.calendarOtherMonths
             else -> MaterialTheme.colorScheme.onSurface
         }
 
@@ -199,7 +190,7 @@ fun DayElement(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(brush = AppTheme.colors.primaryButton, CircleShape)
-                    .border(width = 2.dp, color = Color(0xFFFF840B), CircleShape)// Твой оранжевый акцент
+                    .border(AppTheme.shapes.primaryBorder.copy(width = 2.dp), CircleShape)// Твой оранжевый акцент
             )
         }
         //Цвет остальных дат
@@ -221,7 +212,6 @@ fun DayElement(
             style = AppTheme.fonts.montBold,
             fontSize = 16.sp,
             fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold
-            //fontWeight = FontWeight.Black
         )
     }
 }
