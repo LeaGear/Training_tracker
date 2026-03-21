@@ -18,13 +18,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sporttracker.ui.components.WorkoutDatabase
-import com.example.sporttracker.ui.components.WorkoutViewModel
-import com.example.sporttracker.ui.components.WorkoutViewModelFactory
+import com.example.sporttracker.data.db.WorkoutDatabase
 import com.example.sporttracker.ui.screens.HistoryCalendarScreen
 import com.example.sporttracker.ui.screens.PushUpCounterScreen
 import com.example.sporttracker.ui.screens.StatScreen
 import com.example.sporttracker.ui.theme.SportTrackerTheme
+import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
+import com.example.sporttracker.ui.viewmodel.WorkoutViewModelFactory
 
 
 class MainActivity : ComponentActivity() {

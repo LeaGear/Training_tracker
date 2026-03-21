@@ -1,49 +1,21 @@
-package com.example.sporttracker.ui.components
+package com.example.sporttracker.data.db
 
 import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
-import androidx.room.Embedded
-import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.PrimaryKey
 import androidx.room.Query
-import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
+import com.example.sporttracker.data.db.entities.Exercise
+import com.example.sporttracker.data.db.entities.ExerciseSet
+import com.example.sporttracker.data.db.entities.Workout
+import com.example.sporttracker.data.db.entities.WorkoutWithSets
 import kotlinx.coroutines.flow.Flow
 
-@Entity(tableName = "workout_history")
-data class Workout(
-    @PrimaryKey(autoGenerate = true) val id: Int =0,
-    val exerciseName: String,
-    val date: Long,           // День, когда сделан подход
-    val target: Int          // Цель (например, 100)
-)
-
-@Entity(tableName = "exercise_sets")
-data class ExerciseSet(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val parentWorkoutId: Int,
-    val reps: Int
-)
-
-@Entity(tableName = "exercise")
-data class Exercise(
-    @PrimaryKey val name: String
-)
-
-data class WorkoutWithSets(
-    @Embedded val workout: Workout,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "parentWorkoutId"
-    )
-    val sets: List<ExerciseSet>
-)
 @Dao
 interface WorkoutDao {
 
@@ -104,13 +76,4 @@ abstract class WorkoutDatabase: RoomDatabase(){
             }
         }
     }
-}
-
-fun getStartOfDay(timestamp: Long): Long {
-    return java.time.Instant.ofEpochMilli(timestamp)
-        .atZone(java.time.ZoneId.systemDefault())
-        .toLocalDate()
-        .atStartOfDay(java.time.ZoneId.systemDefault())
-        .toInstant()
-        .toEpochMilli()
 }

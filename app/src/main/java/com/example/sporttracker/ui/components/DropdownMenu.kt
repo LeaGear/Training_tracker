@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.sporttracker.R
+import com.example.sporttracker.data.db.entities.Exercise
 import com.example.sporttracker.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.sporttracker.ui.components
+package com.example.sporttracker.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
@@ -6,6 +6,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.sporttracker.data.db.WorkoutDao
+import com.example.sporttracker.data.db.entities.Exercise
+import com.example.sporttracker.data.db.entities.ExerciseSet
+import com.example.sporttracker.data.db.entities.Workout
+import com.example.sporttracker.data.db.entities.WorkoutWithSets
+import com.example.sporttracker.data.utils.getStartOfDay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +25,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 class WorkoutViewModel(
@@ -47,7 +54,7 @@ class WorkoutViewModel(
                 .ofEpochMilli(date)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
-            java.time.format.DateTimeFormatter
+            DateTimeFormatter
                 .ofPattern("dd.MM")
                 .format(localDate)
         }
@@ -86,8 +93,8 @@ class WorkoutViewModel(
     val workoutByDate: StateFlow<Map<LocalDate, Pair<Int, Int>>> = allWorkouts
         .map { list ->
             list.associate { wws ->
-                val date = java.time.Instant.ofEpochMilli(wws.workout.date)
-                    .atZone(java.time.ZoneId.systemDefault())
+                val date = Instant.ofEpochMilli(wws.workout.date)
+                    .atZone(ZoneId.systemDefault())
                     .toLocalDate()
                 date to Pair(wws.sets.sumOf { it.reps }, wws.workout.target)
             }

@@ -60,8 +60,8 @@ import com.example.sporttracker.ui.components.WorkoutConstants.LARGE_REPS_THRESH
 import com.example.sporttracker.ui.components.WorkoutConstants.MAX_REPS_INPUT_LENGTH
 import com.example.sporttracker.ui.components.WorkoutConstants.STEP_LARGE
 import com.example.sporttracker.ui.components.WorkoutConstants.STEP_SMALL
-import com.example.sporttracker.ui.components.WorkoutViewModel
 import com.example.sporttracker.ui.theme.AppTheme
+import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

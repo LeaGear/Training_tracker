@@ -33,8 +33,8 @@ import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.DropdownMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
-import com.example.sporttracker.ui.components.WorkoutViewModel
 import com.example.sporttracker.ui.theme.AppTheme
+import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 
 @Composable
 fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
