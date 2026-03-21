@@ -48,14 +48,14 @@ android {
         compose = true
     }
     ksp {
-        arg("room.generateKotlin", "false")
+        arg("room.generateKotlin", "true")
     }
 }
 
 dependencies {
     implementation(libs.androidx.compose.remote.creation.core)
     // Room
-    val room_version = "2.6.1"
+    val room_version = "2.7.0"
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     ksp("androidx.room:room-compiler:$room_version")

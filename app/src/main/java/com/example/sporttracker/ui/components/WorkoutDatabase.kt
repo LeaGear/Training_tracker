@@ -55,35 +55,31 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout_history WHERE date = :date AND exerciseName = :name")
     fun getWorkoutWithSets(date: Long, name: String): Flow<WorkoutWithSets?>
 
-    // 2. Если тебе нужно только число Цели (Target)
-    @Query("SELECT target FROM workout_history WHERE date = :date AND exerciseName = :name")
-    fun getTarget(date: Long, name: String): Flow<Int?>
-
     // 4. Запросы для логики (suspend)
     @Query("SELECT id FROM workout_history WHERE date = :date AND exerciseName = :name LIMIT 1")
-    fun getWorkoutIdOnce(date: Long, name: String): Int?
+    suspend fun getWorkoutIdOnce(date: Long, name: String): Int?
 
     @Query("DELETE FROM exercise_sets WHERE id = :setId")
-    fun deleteSetById(setId: Int)
+    suspend fun deleteSetById(setId: Int)
 
     @Query("UPDATE workout_history SET target = :target WHERE date = :date AND exerciseName = :name")
-    fun updateTarget(date: Long, name: String, target: Int)
+    suspend fun updateTarget(date: Long, name: String, target: Int)
     @Query("SELECT * FROM exercise")
     fun getAllExercises(): Flow<List<Exercise>>
     @Query("SELECT * FROM exercise")
-    fun getAllExercisesOnce(): List<Exercise>
+    suspend fun getAllExercisesOnce(): List<Exercise>
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertExercise(exercise: Exercise)
+    suspend fun insertExercise(exercise: Exercise)
 
 
     @Delete
-    fun deleteExercise(exercise: Exercise)
+    suspend fun deleteExercise(exercise: Exercise)
 
     @Insert
-    fun insertWorkout(workout: Workout): Long
+    suspend fun insertWorkout(workout: Workout): Long
 
     @Insert
-    fun insertSet(set: ExerciseSet)
+    suspend fun insertSet(set: ExerciseSet)
 }
 
 @Database(entities = [Workout::class, ExerciseSet::class, Exercise::class], version = 1)
@@ -111,11 +107,10 @@ abstract class WorkoutDatabase: RoomDatabase(){
 }
 
 fun getStartOfDay(timestamp: Long): Long {
-    val calendar = java.util.Calendar.getInstance()
-    calendar.timeInMillis = timestamp
-    calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
-    calendar.set(java.util.Calendar.MINUTE, 0)
-    calendar.set(java.util.Calendar.SECOND, 0)
-    calendar.set(java.util.Calendar.MILLISECOND, 0)
-    return calendar.timeInMillis
+    return java.time.Instant.ofEpochMilli(timestamp)
+        .atZone(java.time.ZoneId.systemDefault())
+        .toLocalDate()
+        .atStartOfDay(java.time.ZoneId.systemDefault())
+        .toInstant()
+        .toEpochMilli()
 }

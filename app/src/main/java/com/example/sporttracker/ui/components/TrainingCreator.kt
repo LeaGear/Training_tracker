@@ -14,9 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.sporttracker.R
+import com.example.sporttracker.ui.components.WorkoutConstants.MAX_EXERCISE_NAME_LENGTH
+import com.example.sporttracker.ui.components.WorkoutConstants.MAX_REPS_INPUT_TARGET_LENGTH
 import com.example.sporttracker.ui.theme.AppTheme
 
 @Composable
@@ -28,13 +31,13 @@ fun CreateWorkoutDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Новая тренировка", style = AppTheme.fonts.montBold) },
+        title = { Text(stringResource(R.string.dialog_new_workout_title), style = AppTheme.fonts.montBold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Название (напр. Отжимания)") }
+                    onValueChange = {  if (it.length <= MAX_EXERCISE_NAME_LENGTH) name = it },
+                    label = { Text(stringResource(R.string.dialog_new_workout_label)) }
                 )
             }
         },
@@ -45,13 +48,13 @@ fun CreateWorkoutDialog(
                         onConfirm(name)
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF840B))
+                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.primaryAccent)
             ) {
-                Text("Создать")
+                Text(stringResource(R.string.btn_create))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) }
         }
     )
 }
@@ -66,13 +69,17 @@ fun SetTargetWindow(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Введите цель на сегодня", style = AppTheme.fonts.montBold) },
+        title = { Text(stringResource(R.string.dialog_set_target_title), style = AppTheme.fonts.montBold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = count,
-                    onValueChange = { count = it },
-                    label = { Text("Количество") }
+                    onValueChange = { newValue ->
+                        if (newValue.all { it.isDigit() } && newValue.length <= MAX_REPS_INPUT_TARGET_LENGTH) {
+                            count = newValue
+                        } },
+                    label = { Text(stringResource(R.string.dialog_set_target_label)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
         },
@@ -86,13 +93,13 @@ fun SetTargetWindow(
                         }
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF840B))
+                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.primaryAccent)
             ) {
-                Text("Записать")
+                Text(stringResource(R.string.btn_save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel)) }
         }
     )
 }

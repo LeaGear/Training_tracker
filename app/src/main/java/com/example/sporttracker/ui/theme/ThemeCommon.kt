@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.TextStyle
 import com.example.sporttracker.R
 
 
@@ -23,7 +23,25 @@ val myCustomFontFamily = FontFamily(
 data class AppColors(
     val primaryButton: Brush,
     val testColor: Brush,
-    val calendarHighlight: Color
+    val calendarHighlight: Color,
+    val primaryAccent : Color,
+
+    // Календарь — статус дня
+    val calendarCompletedStart: Color,    // выполнено — градиент начало
+    val calendarCompletedEnd: Color,      // выполнено — градиент конец
+    val calendarCompletedBorder: Color,
+
+    val calendarInProgressStart: Color,   // в процессе — градиент начало
+    val calendarInProgressEnd: Color,     // в процессе — градиент конец
+    val calendarInProgressBorder: Color,
+
+    val calendarNotStartedStart: Color,   // не начато — градиент начало
+    val calendarNotStartedEnd: Color,     // не начато — градиент конец
+    val calendarNotStartedBorder: Color,
+
+    val calendarDefaultDay: Color,        // обычный день без цели
+    val calendarSelectedBorder: Color,    // рамка выбранного дня
+    val calendarOutsideMonth: Color,      // дни не этого месяца
 // добавь сюда любые свои переменные
 )
 data class AppShapes(
@@ -50,12 +68,46 @@ val LocalAppFonts = staticCompositionLocalOf<AppFonts> {
 val LightPalette = AppColors(
     primaryButton = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
     testColor = Brush.verticalGradient(colors = listOf(Color.Red, Color.Green)),
-    calendarHighlight = Color(0xFFFF4081)
+    calendarHighlight = Color(0xFFFF4081),
+    primaryAccent = Color(0xFFFF840B),
+
+    calendarCompletedStart = Color(0xFF00FF1E),
+    calendarCompletedEnd = Color(0xFF38A342),
+    calendarCompletedBorder = Color(0xFF00FF6A),
+
+    calendarInProgressStart = Color(0xFF00FFFB),
+    calendarInProgressEnd = Color(0xFF0051FF),
+    calendarInProgressBorder = Color(0xFF00A2FF),
+
+    calendarNotStartedStart = Color(0xFFFF0000),
+    calendarNotStartedEnd = Color(0xFFD21856),
+    calendarNotStartedBorder = Color(0xFFB41717),
+
+    calendarDefaultDay = Color(0xFFA4C3E0),
+    calendarSelectedBorder = Color(0xFFFF840B),
+    calendarOutsideMonth = Color(0xFFBDBDBD)
 )
 val DarkPalette = AppColors(
     primaryButton = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
     testColor = Brush.verticalGradient(colors = listOf(Color.Red, Color.Green)),
-    calendarHighlight = Color(0xFFFF79B0)
+    calendarHighlight = Color(0xFFFF79B0),
+    primaryAccent = Color(0xFFFF840B),
+
+    calendarCompletedStart = Color(0xFF00CC18),
+    calendarCompletedEnd = Color(0xFF2D8A36),
+    calendarCompletedBorder = Color(0xFF00CC55),
+
+    calendarInProgressStart = Color(0xFF00E5E0),
+    calendarInProgressEnd = Color(0xFF0044CC),
+    calendarInProgressBorder = Color(0xFF0088CC),
+
+    calendarNotStartedStart = Color(0xFFCC0000),
+    calendarNotStartedEnd = Color(0xFFAA1445),
+    calendarNotStartedBorder = Color(0xFF991212),
+
+    calendarDefaultDay = Color(0xFF5C7A96),
+    calendarSelectedBorder = Color(0xFFFF840B),
+    calendarOutsideMonth = Color(0xFF616161)
 )
  val appShapes = AppShapes(
      primaryBorder = BorderStroke(width = 4.dp, color = Color(0xFFFF840B)),//DCB07A

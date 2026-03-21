@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Sport Tracker</string>
+    <string name="dialog_new_workout_title">Новая тренировка</string>
+    <string name="dialog_new_workout_label">Название (напр. Отжимания)</string>
+    <string name="dialog_set_target_title">Введите цель на сегодня</string>
+    <string name="dialog_set_target_label">Количество</string>
+    <string name="btn_create">Создать</string>
+    <string name="btn_main_save">ЗАПИСАТЬ</string>
+    <string name="btn_save">Записать</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="box_makes">Сделано: </string>
+    <string name="box_target">Цель: </string>
+    <string name="hold_to_delete">Удерживайте для удаления</string>
+    <string name="hand_entering">Введите вручную: </string>
 </resources>

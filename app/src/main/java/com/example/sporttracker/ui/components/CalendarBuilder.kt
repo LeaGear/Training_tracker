@@ -1,28 +1,32 @@
 package com.example.sporttracker.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sporttracker.R
 import com.example.sporttracker.ui.theme.AppTheme
-import com.example.sporttracker.ui.theme.SportTrackerTheme
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -38,7 +42,7 @@ import java.util.Locale
 fun SetTrackerCalendar(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
-    viewModel: WorkoutViewModel
+    workoutByDate: Map<LocalDate, Pair<Int, Int>>
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(50) }
@@ -52,24 +56,9 @@ fun SetTrackerCalendar(
         firstDayOfWeek = daysOfWeek.first()
     )
 
-    val allWorkouts by viewModel.allWorkouts.collectAsState()
-
-// Строим Map<LocalDate, Pair<Int,Int>> — total и target для каждой даты
-    val workoutByDate = remember(allWorkouts) {
-        allWorkouts.associate { wws ->
-            val date = java.time.Instant.ofEpochMilli(wws.workout.date)
-                .atZone(java.time.ZoneId.systemDefault())
-                .toLocalDate()
-            date to Pair(
-                wws.sets.sumOf { it.reps },
-                wws.workout.target
-            )
-        }
-    }
-
     Column(modifier = Modifier
-        .fillMaxWidth()
-        .statusBarsPadding(),
+        .fillMaxWidth(),
+        //.statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
@@ -84,8 +73,8 @@ fun SetTrackerCalendar(
         Box(modifier = Modifier
             .size(height = 40.dp, width = 180.dp)
             .clip(AppTheme.shapes.mainShape)
-            .background(AppTheme.colors.primaryButton, AppTheme.shapes.mainShape)
-            .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
+            .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+            .background(AppTheme.colors.primaryButton),
             contentAlignment = Alignment.Center
         ){
             Text(
@@ -106,6 +95,7 @@ fun SetTrackerCalendar(
                     .fillMaxWidth()
                     .height(350.dp)
                     .clip(AppTheme.shapes.mainShape)
+                    .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
@@ -114,11 +104,10 @@ fun SetTrackerCalendar(
                             )
                         )
                     )
-                    .blur(20.dp)
-                    .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+                    //.blur(20.dp)
             )
 
-            HorizontalCalendar(
+            HorizontalCalendar(modifier = Modifier.padding(6.dp),
                 state = state,
                 // В dayContent передай данные для этой даты
                 dayContent = { day ->
@@ -133,7 +122,7 @@ fun SetTrackerCalendar(
                 },
                 //Верхняя часть калнедаря гле показаны дни недели
                 monthHeader = {
-                    Row(modifier = Modifier.fillMaxWidth().offset(y = 6.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
                         daysOfWeek.forEach { dayOfWeek ->
                             Text(
                                 modifier = Modifier.weight(1f),
@@ -141,7 +130,7 @@ fun SetTrackerCalendar(
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 style = AppTheme.fonts.montBlack,
                                 fontSize = 12.sp,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -160,17 +149,29 @@ fun DayElement(
     total: Int = 0,
     target: Int = 0){
 
+    val colors = AppTheme.colors
+
     val dateBrush = when {
-        target == 0 -> null         // нет цели — не красим
-        total >= target -> Brush.linearGradient(listOf(Color(0xFF00FF1E), Color(0xFF38A342)))
-        total > 0 -> Brush.linearGradient(listOf(Color(0xFF00FFFB), Color(0xFF0051FF)))
-        else -> Brush.linearGradient(listOf(Color(0xFFFF0000), Color(0xFFD21856)))          // не начато — красный
+        target == 0 -> Brush.linearGradient(
+            listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
+                colors.calendarDefaultDay.copy(alpha = 0.4f))
+        )
+        total >= target -> Brush.linearGradient(
+            listOf(colors.calendarCompletedStart, colors.calendarCompletedEnd)
+        )
+        total > 0 -> Brush.linearGradient(
+            listOf(colors.calendarInProgressStart, colors.calendarInProgressEnd)
+        )
+        else -> Brush.linearGradient(
+            listOf(colors.calendarNotStartedStart, colors.calendarNotStartedEnd)
+        )
     }
-    val dateBorder = when{
-        target == 0 -> Color.Transparent         // нет цели — не красим
-        total >= target -> Color(0xFF00FF6A)
-        total > 0 -> Color(0xFF00A2FF)
-        else -> Color(0xFFB41717)
+
+    val dateBorder = when {
+        target == 0    -> Color.Transparent
+        total >= target -> colors.calendarCompletedBorder
+        total > 0      -> colors.calendarInProgressBorder
+        else           -> colors.calendarNotStartedBorder
     }
 
     //Обьект кнопки даты
@@ -189,7 +190,7 @@ fun DayElement(
         val textColor = when {
             isSelected -> Color.White
             day.position != DayPosition.MonthDate -> Color.LightGray
-            else -> Color.Black
+            else -> MaterialTheme.colorScheme.onSurface
         }
 
         //Цвет выделенной даты
@@ -207,12 +208,7 @@ fun DayElement(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        brush = dateBrush ?: Brush.linearGradient(
-                            listOf(
-                                Color(0xFFA4C3E0).copy(alpha = 0.4f),
-                                Color(0xFFA4C3E0).copy(alpha = 0.4f)
-                            )
-                        ),
+                        brush = dateBrush,
                         shape = CircleShape
                     )
                     .border(2.dp, dateBorder , CircleShape)
