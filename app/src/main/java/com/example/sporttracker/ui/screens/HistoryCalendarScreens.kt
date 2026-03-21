@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,6 +44,7 @@ import com.example.sporttracker.ui.components.WorkoutViewModel
 import com.example.sporttracker.setTarget
 import com.example.sporttracker.ui.components.CreateWorkoutDialog
 import com.example.sporttracker.ui.components.DropdownMenu
+import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.components.SetTrackerCalendar
 import com.example.sporttracker.ui.theme.myCustomFontFamily
@@ -52,12 +54,12 @@ import java.time.ZoneId
 
 @Composable
 fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
-    val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedDateMillis by viewModel.selectedDate.collectAsState()
     val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
 
+    var showTargetDialog by remember { mutableStateOf(false) }
     val sets by viewModel.setsForSelectedDate.collectAsState(initial = emptyList())
     val currentTarget by  viewModel.targetForSelectedDate.collectAsState(initial = "")
 
@@ -65,13 +67,22 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val currentTotal = sets.sumOf { it.reps }
     var showDialog by remember { mutableStateOf(false) }
 
+    if (showTargetDialog) {
+        SetTargetWindow(
+            onDismiss = {showTargetDialog = false},
+            onConfirm = {count ->
+                viewModel.setTarget(count)
+                showTargetDialog = false
+            }
+        )
+    }
+
+
     if (showDialog) {
         CreateWorkoutDialog(
             onDismiss = { showDialog = false },
-            onConfirm = { name -> // Исправлено: принимаем 3 параметра
+            onConfirm = { name ->
                 viewModel.changeExercise(name)
-                // Если у тебя во ViewModel есть метод сохранения цели:
-                // viewModel.saveNewGoal(name, target)
                 showDialog = false
             }
         )
@@ -85,35 +96,17 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     .toInstant()
                     .toEpochMilli()
                 viewModel.changeDate(millis)
-            }
+            },
+            viewModel
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        //Кнопка выбора тренировки
-//        Button(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(40.dp),
-//            onClick = {setTarget(currentTotal, 1.0f)},
-//            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-//            contentPadding = PaddingValues(0.dp),
-//            shape = AppTheme.shapes.mainShape
-//        ){
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(AppTheme.colors.primaryButton, AppTheme.shapes.mainShape)
-//                    .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
-//                contentAlignment = Alignment.Center
-//            ){
-//              Text(exerciseName)
-//            }
-//        }
         DropdownMenu(viewModel = viewModel,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
+                .width(380.dp)
+                .height(40.dp),
+            menuModifier = Modifier.width(380.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -157,7 +150,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize(),
-                onClick = { showDialog = true},
+                onClick = { showTargetDialog = true},
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues(0.dp),
                 shape = AppTheme.shapes.mainShape
@@ -194,20 +187,24 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
         // Список упражнений за этот день
         LazyColumn {
             items(sets) { workoutSet ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(2.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clip(AppTheme.shapes.mainShape)
+                        .background(AppTheme.colors.primaryButton)
+                        .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+                        .padding(vertical = 12.dp), // <-- внутренний отступ для текста
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(modifier = Modifier.padding(16.dp)) {
-                        Text("Сделано", fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(" -> ", color = Color.Gray)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("${workoutSet.reps} повт.")
+                    Text(
+                    text = "Сделано -> ${workoutSet.reps}",
+                    fontFamily = myCustomFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 26.sp,
+                    color = Color.White)
                     }
                 }
             }
         }
     }
-}

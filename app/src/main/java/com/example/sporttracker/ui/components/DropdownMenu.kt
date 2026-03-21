@@ -3,10 +3,13 @@ package com.example.sporttracker.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DropdownMenuItem
@@ -34,7 +37,8 @@ import com.example.sporttracker.ui.theme.AppTheme
 @Composable
 fun DropdownMenu(
     viewModel: WorkoutViewModel, // Передаем ViewModel параметром
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    menuModifier: Modifier = Modifier
 ){
     var showAddDialog by remember { mutableStateOf(false) }
 
@@ -62,7 +66,8 @@ fun DropdownMenu(
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxSize()
-                .background(AppTheme.colors.primaryButton, AppTheme.shapes.mainShape)
+                .clip(AppTheme.shapes.mainShape)
+                .background(AppTheme.colors.primaryButton)
                 .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
             contentAlignment = Alignment.Center
         ){
@@ -76,16 +81,15 @@ fun DropdownMenu(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = {expanded = false},
-            modifier = Modifier
-                .clip(AppTheme.shapes.mainShape)
+            shape = AppTheme.shapes.mainShape,
+            modifier = menuModifier
+                //.clip(AppTheme.shapes.mainShape)
                 .background(AppTheme.colors.primaryButton)
-                .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                .padding(8.dp)
+                //.border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+                .padding(10.dp)
         ){
             exercises.forEach { exercise ->
                 DropdownMenuItem(
-                    modifier = Modifier
-                        .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
                     text = {
                         Text(
                             exercise.name,
@@ -106,8 +110,8 @@ fun DropdownMenu(
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )
             }
-            DropdownMenuItem(modifier = Modifier
-                .border(AppTheme.shapes.primaryBorder),
+            DropdownMenuItem(//modifier = Modifier
+                //.border(AppTheme.shapes.primaryBorder),
                 text = { Text("+ Добавить упражнение",
                     style = AppTheme.fonts.montBold,
                     color = Color.Green)},

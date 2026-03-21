@@ -55,3 +55,44 @@ fun CreateWorkoutDialog(
         }
     )
 }
+
+
+@Composable
+fun SetTargetWindow(
+    onDismiss: () -> Unit,
+    onConfirm: (count: Int) -> Unit
+){
+    var count by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Введите цель на сегодня", style = AppTheme.fonts.montBold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = count,
+                    onValueChange = { count = it },
+                    label = { Text("Количество") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (count.isNotBlank()) {
+                        val number = count.toIntOrNull()
+                        if (number != null) {  // проверяем что введено корректное число
+                            onConfirm(number)
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF840B))
+            ) {
+                Text("Записать")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Отмена") }
+        }
+    )
+}

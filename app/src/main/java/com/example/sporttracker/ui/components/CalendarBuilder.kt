@@ -37,7 +37,8 @@ import java.util.Locale
 @Composable
 fun SetTrackerCalendar(
     selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    viewModel: WorkoutViewModel
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(50) }
@@ -50,6 +51,21 @@ fun SetTrackerCalendar(
         firstVisibleMonth = currentMonth,
         firstDayOfWeek = daysOfWeek.first()
     )
+
+    val allWorkouts by viewModel.allWorkouts.collectAsState()
+
+// Строим Map<LocalDate, Pair<Int,Int>> — total и target для каждой даты
+    val workoutByDate = remember(allWorkouts) {
+        allWorkouts.associate { wws ->
+            val date = java.time.Instant.ofEpochMilli(wws.workout.date)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate()
+            date to Pair(
+                wws.sets.sumOf { it.reps },
+                wws.workout.target
+            )
+        }
+    }
 
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -104,11 +120,15 @@ fun SetTrackerCalendar(
 
             HorizontalCalendar(
                 state = state,
+                // В dayContent передай данные для этой даты
                 dayContent = { day ->
+                    val (total, target) = workoutByDate[day.date] ?: Pair(0, 0)
                     DayElement(
                         day = day,
                         isSelected = selectedDate == day.date,
-                        onClick = { onDateSelected(it.date) }
+                        onClick = { onDateSelected(it.date) },
+                        total = total,
+                        target = target
                     )
                 },
                 //Верхняя часть калнедаря гле показаны дни недели
@@ -133,7 +153,26 @@ fun SetTrackerCalendar(
 }
 
 @Composable
-fun DayElement(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+fun DayElement(
+    day: CalendarDay,
+    isSelected: Boolean,
+    onClick: (CalendarDay) -> Unit,
+    total: Int = 0,
+    target: Int = 0){
+
+    val dateBrush = when {
+        target == 0 -> null         // нет цели — не красим
+        total >= target -> Brush.linearGradient(listOf(Color(0xFF00FF1E), Color(0xFF38A342)))
+        total > 0 -> Brush.linearGradient(listOf(Color(0xFF00FFFB), Color(0xFF0051FF)))
+        else -> Brush.linearGradient(listOf(Color(0xFFFF0000), Color(0xFFD21856)))          // не начато — красный
+    }
+    val dateBorder = when{
+        target == 0 -> Color.Transparent         // нет цели — не красим
+        total >= target -> Color(0xFF00FF6A)
+        total > 0 -> Color(0xFF00A2FF)
+        else -> Color(0xFFB41717)
+    }
+
     //Обьект кнопки даты
     Box(
         modifier = Modifier
@@ -146,17 +185,11 @@ fun DayElement(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> 
             ),
         contentAlignment = Alignment.Center
     ) {
-        //Закрашывание цифры в зависиомсти от даты
+        //Закрашивание цифры в зависимости от даты
         val textColor = when {
             isSelected -> Color.White
             day.position != DayPosition.MonthDate -> Color.LightGray
             else -> Color.Black
-        }
-        //Цвет ячейки в зависимости от результата за день
-
-        val dateResult = when{
-            isSelected -> Color.Green //Вот тут логика Тотал больше таргета
-            else -> Color.Red
         }
 
         //Цвет выделенной даты
@@ -173,8 +206,16 @@ fun DayElement(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFA4C3E0).copy(alpha = 0.4f), CircleShape)
-                    //.border(width = 2.dp, color = Color(0xFFFF840B), CircleShape)// Твой оранжевый акцент
+                    .background(
+                        brush = dateBrush ?: Brush.linearGradient(
+                            listOf(
+                                Color(0xFFA4C3E0).copy(alpha = 0.4f),
+                                Color(0xFFA4C3E0).copy(alpha = 0.4f)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+                    .border(2.dp, dateBorder , CircleShape)
             )
         }
         //Дата в ячейке календаря
@@ -184,6 +225,7 @@ fun DayElement(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> 
             style = AppTheme.fonts.montBold,
             fontSize = 16.sp,
             fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold
+            //fontWeight = FontWeight.Black
         )
     }
 }

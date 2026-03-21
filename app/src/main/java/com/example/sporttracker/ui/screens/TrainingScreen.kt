@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -61,6 +62,7 @@ import com.example.sporttracker.ui.components.CreateWorkoutDialog
 import com.example.sporttracker.ui.components.DropdownMenu
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.components.RecordButton
+import com.example.sporttracker.ui.components.SetTargetWindow
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -68,20 +70,34 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val haptic = LocalHapticFeedback.current
+    val exerciseName by viewModel.exerciseName.collectAsState()
+    val date by viewModel.selectedDate.collectAsState()
+
+    val formattedDate = remember(date) {
+        val sdf = java.text.SimpleDateFormat("dd.MM", java.util.Locale("ru"))
+        sdf.format(java.util.Date(date))
+    }
+    var showTargetDialog by remember {mutableStateOf(false)}
 
     var count by remember {mutableIntStateOf(0)}
-    var screenTarget by remember {mutableIntStateOf(0)}
-    var exerciseName by remember {mutableStateOf("Push")}
     var editingValue by remember { mutableStateOf(count.toString()) }
     LaunchedEffect(count) {
         editingValue = count.toString()
     }
-
     val workoutData by viewModel.todayWorkout.collectAsState()
+    val targetInDay = workoutData?.workout?.target ?: 0
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
     val currentSets = workoutData?.sets ?: emptyList()
 
-
+    if (showTargetDialog) {
+        SetTargetWindow(
+            onDismiss = {showTargetDialog = false},
+            onConfirm = {count ->
+                viewModel.setTarget(count)
+                showTargetDialog = false
+            }
+        )
+    }
 
     // ГЛАВНЫЙ ЭКРАН (Фон)
     Box(
@@ -97,19 +113,67 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         DropdownMenu(viewModel = viewModel,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 795.dp)
-                .size(width = 300.dp, height = 40.dp)
+                .padding(bottom = 720.dp)
+                .size(width = 300.dp, height = 40.dp),
                 //.fillMaxWidth()
                 //.height(40.dp)
+            menuModifier = Modifier.width(300.dp)
             )
 
+
+//        //Окно счета
+//        Box(
+//            modifier = Modifier
+//                .align(Alignment.BottomCenter)
+//                .padding(bottom = 600.dp)
+//                .size(180.dp)
+//                .clip(CircleShape)
+//                .border(border = AppTheme.shapes.primaryBorder,
+//                    shape = CircleShape)
+//                .background(brush = AppTheme.colors.primaryButton),
+//            contentAlignment = Alignment.Center
+//        ){
+//            Column(
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ){
+//                Text(text = "$formattedDate",
+//                    style = AppTheme.fonts.montBlack,
+//                    fontSize = 30.sp,
+//                    color = Color.White)
+//                Spacer(modifier = Modifier.padding(8.dp))
+//                Text(text = "$count",
+//                    style = AppTheme.fonts.montBlack,
+//                    fontSize = 55.sp,
+//                    color = Color.White)
+//            }
+//
+//        }
 
         //Окно счета
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 540.dp)
-                .size(240.dp)
+                .padding(bottom = 620.dp)
+                .size(width = 140.dp,   height = 80.dp)
+                .clip(RoundedCornerShape(35.dp))
+                .border(border = AppTheme.shapes.primaryBorder,
+                    shape = RoundedCornerShape(35.dp))
+                .background(brush = AppTheme.colors.primaryButton),
+            contentAlignment = Alignment.Center
+        ){
+            Text(text = "$count",
+                style = AppTheme.fonts.montBlack,
+                fontSize = 50.sp,
+                color = Color.White)
+        }
+
+        //Окно с результатом за сегодня
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 520.dp)
+                .offset(x = (-120).dp)
+                .size(130.dp)
                 .clip(CircleShape)
                 .border(border = AppTheme.shapes.primaryBorder,
                     shape = CircleShape)
@@ -117,19 +181,67 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             contentAlignment = Alignment.Center
         ){
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Text(text = "$count",
-                    style = AppTheme.fonts.montBlack,
-                    fontSize = 55.sp,
-                    color = Color.White)
-                Spacer(modifier = Modifier.padding(10.dp))
-                Text("Today total: $currentTotal",
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(text = "Сделано: ",
                     style = AppTheme.fonts.montBold,
                     fontSize = 20.sp,
                     color = Color.White)
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text("$currentTotal",
+                    style = AppTheme.fonts.montBlack,
+                    fontSize = 28.sp,
+                    color = Color.White)
             }
 
+        }
+        //Окно с целью на сегодня
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 520.dp)
+                .offset(x = 120.dp)
+                .size(130.dp)
+                .clip(CircleShape)
+                .border(border = AppTheme.shapes.primaryBorder,
+                    shape = CircleShape)
+                .background(brush = AppTheme.colors.primaryButton)
+                .clickable{showTargetDialog = true},
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(text = "Цель: ",
+                    style = AppTheme.fonts.montBold,
+                    fontSize = 20.sp,
+                    color = Color.White)
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text("$targetInDay",
+                    style = AppTheme.fonts.montBlack,
+                    fontSize = 28.sp,
+                    color = Color.White)
+            }
+
+        }
+        //куржочек с текущей датой
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 520.dp)
+                .size(60.dp)
+                .clip(CircleShape)
+                .border(border = AppTheme.shapes.primaryBorder,
+                    shape = CircleShape)
+                .background(brush = AppTheme.colors.primaryButton),
+            contentAlignment = Alignment.Center
+        ){
+            Text(text = "$formattedDate",
+                style = AppTheme.fonts.montBlack,
+                fontSize = 16.sp,
+                color = Color.White)
         }
         //Контейнер количества подходов
         Box(
@@ -176,28 +288,6 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     }
                 }
             }
-        }
-
-        //Верхняя кнопка для очистки ввода
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 310.dp)
-                .offset(x = 115.dp)
-                .size(30.dp)
-                .clip(CircleShape)
-                .border(width = 2.dp,
-                    color = Color.Red,
-                    shape = CircleShape)
-                .clickable{count = 0},
-            contentAlignment = Alignment.Center
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.clear), // Твоя картинка из res/drawable
-                contentDescription = "Описание для слабовидящих",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop // Важно: обрезает фото, чтобы оно заполнило весь Box без искажений
-            )
         }
 
         //Верхняя кнопка для ручного ввода
@@ -286,7 +376,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         //Кнопка записи - НИЖНЯЯ
         RecordButton(
             mainText = "ЗАПИСАТЬ",
-            mainClick =  {viewModel.addSet(exerciseName, count, screenTarget)},
+            mainClick =  {viewModel.addSet(exerciseName, count, targetInDay)},
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 78.dp)

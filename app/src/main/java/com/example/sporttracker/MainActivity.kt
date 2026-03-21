@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         // 1. Инициализируем базу данных
         val database = WorkoutDatabase.getDatabase(applicationContext)
         // 2. Создаем фабрику
-        val factory = WorkoutViewModelFactory(database.workoutDao())
+        val factory = WorkoutViewModelFactory(database.workoutDao(), application)
 
         setContent {
             // 3. Передаем фабрику во вью модель

@@ -49,18 +49,15 @@ interface WorkoutDao {
 
     // 1. Получаем ВСЁ разом (самый эффективный способ для UI)
     @Transaction
+    @Query("SELECT * FROM workout_history WHERE exerciseName = :name")
+    fun getAllWorkoutsWithSets(name: String): Flow<List<WorkoutWithSets>>
+    @Transaction
     @Query("SELECT * FROM workout_history WHERE date = :date AND exerciseName = :name")
     fun getWorkoutWithSets(date: Long, name: String): Flow<WorkoutWithSets?>
 
     // 2. Если тебе нужно только число Цели (Target)
     @Query("SELECT target FROM workout_history WHERE date = :date AND exerciseName = :name")
     fun getTarget(date: Long, name: String): Flow<Int?>
-
-    // 3. А вот с Суммой (Total) есть важный нюанс!
-    // В твоей таблице Workout есть колонка total, но она "статична".
-    // Если ты хочешь реальную сумму всех подходов из таблицы ExerciseSet:
-    @Query("SELECT SUM(reps) FROM exercise_sets WHERE parentWorkoutId = :workoutId")
-    fun getSumOfReps(workoutId: Int): Flow<Int?>
 
     // 4. Запросы для логики (suspend)
     @Query("SELECT id FROM workout_history WHERE date = :date AND exerciseName = :name LIMIT 1")
@@ -69,14 +66,19 @@ interface WorkoutDao {
     @Query("DELETE FROM exercise_sets WHERE id = :setId")
     fun deleteSetById(setId: Int)
 
+    @Query("UPDATE workout_history SET target = :target WHERE date = :date AND exerciseName = :name")
+    fun updateTarget(date: Long, name: String, target: Int)
     @Query("SELECT * FROM exercise")
     fun getAllExercises(): Flow<List<Exercise>>
-
+    @Query("SELECT * FROM exercise")
+    fun getAllExercisesOnce(): List<Exercise>
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertExercise(exercise: Exercise)
 
+
     @Delete
     fun deleteExercise(exercise: Exercise)
+
     @Insert
     fun insertWorkout(workout: Workout): Long
 
