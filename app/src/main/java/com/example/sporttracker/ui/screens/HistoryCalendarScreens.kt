@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sporttracker.R
-import com.example.sporttracker.ui.components.DropdownMenu
+import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
 import com.example.sporttracker.ui.theme.AppTheme
@@ -41,6 +41,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     var showTargetDialog by remember { mutableStateOf(false) }
 
 
+    val defaultTarget by viewModel.defaultTarget.collectAsState()
     val exercises by viewModel.availableExercises.collectAsState()
     val currentExercise by viewModel.exerciseName.collectAsState()
     val allWorkouts by viewModel.workoutByDate.collectAsState()
@@ -75,7 +76,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             workoutByDate = allWorkouts
         )
 
-        DropdownMenu(
+        DropdownExerciseMenu(
             exercises = exercises,
             currentExercise = currentExercise,
             onExerciseSelected = { viewModel.changeExercise(it) },

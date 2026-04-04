@@ -27,7 +27,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -53,9 +59,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.AddSubtractButtons
-import com.example.sporttracker.ui.components.DropdownMenu
+import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.RecordButton
 import com.example.sporttracker.ui.components.SetTargetWindow
+import com.example.sporttracker.ui.components.SettingsContent
 import com.example.sporttracker.ui.components.WorkoutConstants.LARGE_REPS_THRESHOLD
 import com.example.sporttracker.ui.components.WorkoutConstants.MAX_REPS_INPUT_LENGTH
 import com.example.sporttracker.ui.components.WorkoutConstants.STEP_LARGE
@@ -63,7 +70,7 @@ import com.example.sporttracker.ui.components.WorkoutConstants.STEP_SMALL
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val context = LocalContext.current
@@ -72,8 +79,12 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
 
     val formattedDate by viewModel.formattedDate.collectAsState()
 
-    var showTargetDialog by remember { mutableStateOf(false) }
+    //Settings information
+    val defaultTarget by viewModel.defaultTarget.collectAsState()
+    val language by viewModel.language.collectAsState()
 
+    var showTargetDialog by remember { mutableStateOf(false) }
+    var showSettings by remember {mutableStateOf(false)}
     val count by viewModel.count.collectAsState()
 
     val exercises by viewModel.availableExercises.collectAsState()
@@ -84,6 +95,21 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
     val currentSets = workoutData?.sets ?: emptyList()
 
+    if (showSettings){
+        ModalBottomSheet(
+            onDismissRequest = { showSettings = false },
+            containerColor = AppTheme.colors.settingsBack
+            ) {
+            // сюда помещаешь содержимое настроек
+            SettingsContent(
+                defaultTarget = defaultTarget,
+                language = language,
+                onDefaultTargetChanged = {viewModel.setDefaultTarget(it)},
+                onLanguageChanged = {viewModel.setLanguage(it)},
+                onDismiss = { showSettings = false }
+            )
+        }
+    }
     if (showTargetDialog) {
         SetTargetWindow(
             onDismiss = { showTargetDialog = false },
@@ -94,6 +120,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         )
     }
 
+    //All main screen
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -103,7 +130,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 indication = null
             ) { focusManager.clearFocus() }
     ) {
-        // Верхняя зона
+        // First screen zone(up) from settings to keyboard
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -111,7 +138,38 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            DropdownMenu(
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).background(Color.Red),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ){
+                // Box with current date
+                Box(
+                    modifier = Modifier
+                        .size(width = 100.dp, height = 40.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .border(border = AppTheme.shapes.primaryBorder, shape = RoundedCornerShape(14.dp))
+                        .background(brush = AppTheme.colors.primaryButton),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = formattedDate,
+                        style = AppTheme.fonts.montBlack,
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+                }
+                IconButton(
+                    onClick = {showSettings = true}
+                ){
+                    Icon(Icons.Default.Settings,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp),
+                        tint = Color.White
+                    )
+                }
+
+            }
+            DropdownExerciseMenu(
                 exercises = exercises,
                 currentExercise = currentExercise,
                 onExerciseSelected = { viewModel.changeExercise(it) },
@@ -125,31 +183,12 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 menuModifier = Modifier.width(300.dp)
             )
 
-            Box(
-                modifier = Modifier
-                    .size(width = 140.dp, height = 80.dp)
-                    .clip(RoundedCornerShape(35.dp))
-                    .border(
-                        border = AppTheme.shapes.primaryBorder,
-                        shape = RoundedCornerShape(35.dp)
-                    )
-                    .background(brush = AppTheme.colors.primaryButton),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = count.toString(),
-                    style = AppTheme.fonts.montBlack,
-                    fontSize = 50.sp,
-                    color = Color.White
-                )
-            }
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Сделано
+                // Make sets box
                 Box(
                     modifier = Modifier
                         .size(130.dp)
@@ -174,24 +213,8 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     }
                 }
 
-                // Дата
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
-                        .background(brush = AppTheme.colors.primaryButton),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = formattedDate,
-                        style = AppTheme.fonts.montBlack,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                }
 
-                // Цель
+                // Target Box
                 Box(
                     modifier = Modifier
                         .size(130.dp)
@@ -218,6 +241,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 }
             }
 
+            //Window with sets and count of sets
             Box(
                 modifier = Modifier
                     .size(width = 309.dp, height = 156.dp)
@@ -268,7 +292,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
 
         }
 
-        // Нижняя зона — фиксированная высота
+        // Second part of screen(down)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -276,6 +300,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            //Users manually input current times
             Box(
                 modifier = Modifier
                     .size(width = 250.dp, height = 80.dp)
@@ -326,6 +351,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 )
             }
 
+            //Buttons for easiest added count
             AddSubtractButtons(
                 leftText = "-10",
                 rightText = "+10",
@@ -340,6 +366,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 onRightClick = { viewModel.incrementCount(STEP_SMALL) }
             )
 
+            //Record button
             RecordButton(
                 mainText = stringResource(R.string.btn_main_save),
                 mainClick = { viewModel.addSet(count) },

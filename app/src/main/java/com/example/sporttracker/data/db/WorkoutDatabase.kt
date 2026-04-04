@@ -52,6 +52,14 @@ interface WorkoutDao {
 
     @Insert
     suspend fun insertSet(set: ExerciseSet)
+
+//    //Settings database command
+//    @Insert
+//    suspend fun insertDefTarget(defaultTarget: Settings)
+//    @Insert
+//    suspend fun insertLanguage(language: Settings)
+//    @Query("SELECT * FROM defaultTarget")
+//    suspend fun getDefaultTarget()
 }
 
 @Database(entities = [Workout::class, ExerciseSet::class, Exercise::class], version = 1)

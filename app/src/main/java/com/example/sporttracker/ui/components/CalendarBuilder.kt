@@ -143,6 +143,10 @@ fun DayElement(
     val colors = AppTheme.colors
 
     val dateBrush = when {
+        day.position != DayPosition.MonthDate -> Brush.linearGradient(
+            listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
+                colors.calendarDefaultDay.copy(alpha = 0.4f))
+        )
         target == 0 -> Brush.linearGradient(
             listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
                 colors.calendarDefaultDay.copy(alpha = 0.4f))

@@ -15,4 +15,6 @@
     <string name="hand_entering">Введите вручную: </string>
     <string name="btn_add_exercise">+ Добавить упражнение</string>
     <string name="description_delete">Удалить</string>
+    <string name="settings_set_default_target">Установить стандартную цель</string>
+    <string name="settings_language">Язык</string>
 </resources>

@@ -45,6 +45,16 @@ class WorkoutViewModel(
     private val _exerciseName = MutableStateFlow(prefs.getString("last_exercise", null) ?: "Добавить")
     val exerciseName: StateFlow<String> = _exerciseName.asStateFlow()
 
+    private val _defaultTarget = MutableStateFlow(
+        prefs.getInt("default_target", 0)
+    )
+    val defaultTarget: StateFlow<Int> = _defaultTarget.asStateFlow()
+
+    private val _language = MutableStateFlow(
+        prefs.getString("language", "ru") ?: "ru"
+    )
+    val language: StateFlow<String> = _language.asStateFlow()
+
     // --- Производные данные ---
 
     // Форматированная дата — готовая строка для UI
@@ -185,6 +195,14 @@ class WorkoutViewModel(
 
     fun resetCount() {
         _count.value = 0
+    }
+    fun setDefaultTarget(value: Int){
+        _defaultTarget.value = value
+        prefs.edit().putInt("default_target", value). apply()
+    }
+    fun setLanguage(lang:String){
+        _language.value = lang
+        prefs.edit().putString("language", lang).apply()
     }
 }
 

@@ -31,7 +31,7 @@ import com.example.sporttracker.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownMenu(
+fun DropdownExerciseMenu(
     exercises: List<Exercise>,
     currentExercise: String,
     onExerciseSelected: (String) -> Unit,

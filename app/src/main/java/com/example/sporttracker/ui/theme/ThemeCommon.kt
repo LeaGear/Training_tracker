@@ -41,7 +41,11 @@ data class AppColors(
 
     val calendarDefaultDay: Color,        // обычный день без цели
     val calendarSelectedBorder: Color,    // рамка выбранного дня
-    val calendarOtherMonths: Color
+    val calendarOtherMonths: Color,
+
+    val settingsBack: Color,
+    val settingsElement: Brush,
+    val settingsBorder: Color
 )
 data class AppShapes(
     val primaryBorder: BorderStroke,
@@ -84,7 +88,13 @@ val LightPalette = AppColors(
 
     calendarDefaultDay = Color(0xFFA4C3E0),
     calendarSelectedBorder = Color(0xFFFF840B),
-    calendarOtherMonths = Color(0xFF8D8D8D)
+    calendarOtherMonths = Color(0xFF8D8D8D),
+
+    settingsBack = Color(0xFFE0F4F6),
+    settingsElement = Brush.verticalGradient(
+        colors = listOf(Color(0xFF00A8B5), Color(0xFF007A85))
+    ),
+    settingsBorder = Color(0xFF007A85)
 )
 val DarkPalette = AppColors(
     primaryButton = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
@@ -106,7 +116,13 @@ val DarkPalette = AppColors(
 
     calendarDefaultDay = Color(0xFF5C7A96),
     calendarSelectedBorder = Color(0xFFFF840B),
-    calendarOtherMonths = Color(0xFF8D8D8D)
+    calendarOtherMonths = Color(0xFF8D8D8D),
+
+    settingsBack = Color(0xFF0D3B40),
+    settingsElement = Brush.verticalGradient(
+        colors = listOf(Color(0xFF00C2D1), Color(0xFF009BAA))
+    ),
+    settingsBorder = Color(0xFF009BAA)
 )
  val appShapes = AppShapes(
      primaryBorder = BorderStroke(width = 4.dp, color = Color(0xFFFF840B)),//DCB07A
