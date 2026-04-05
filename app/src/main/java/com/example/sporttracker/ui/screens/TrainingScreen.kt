@@ -22,13 +22,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -84,7 +86,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val language by viewModel.language.collectAsState()
 
     var showTargetDialog by remember { mutableStateOf(false) }
-    var showSettings by remember {mutableStateOf(false)}
+    var showSettings by remember { mutableStateOf(false) }
     val count by viewModel.count.collectAsState()
 
     val exercises by viewModel.availableExercises.collectAsState()
@@ -93,22 +95,22 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val workoutData by viewModel.todayWorkout.collectAsState()
     //val targetInDay = workoutData?.workout?.target ?: 0
     val tmTarget = workoutData?.workout?.target ?: 0
-    val targetInDay = if(tmTarget == 0) defaultTarget else tmTarget
+    val targetInDay = if (tmTarget == 0) defaultTarget else tmTarget
     //val targetInDay by viewModel.currentTarget.collectAsState()
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
     val currentSets = workoutData?.sets ?: emptyList()
 
-    if (showSettings){
+    if (showSettings) {
         ModalBottomSheet(
             onDismissRequest = { showSettings = false },
             containerColor = AppTheme.colors.settingsBack
-            ) {
+        ) {
             // сюда помещаешь содержимое настроек
             SettingsContent(
                 defaultTarget = defaultTarget,
                 language = language,
-                onDefaultTargetChanged = {viewModel.setDefaultTarget(it)},
-                onLanguageChanged = {viewModel.setLanguage(it)},
+                onDefaultTargetChanged = { viewModel.setDefaultTarget(it) },
+                onLanguageChanged = { viewModel.setLanguage(it) },
                 onDismiss = { showSettings = false }
             )
         }
@@ -146,13 +148,16 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 // Box with current date
                 Box(
                     modifier = Modifier
                         .size(width = 100.dp, height = 40.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .border(border = AppTheme.shapes.primaryBorder, shape = RoundedCornerShape(14.dp))
+                        .border(
+                            border = AppTheme.shapes.primaryBorder,
+                            shape = RoundedCornerShape(14.dp)
+                        )
                         .background(brush = AppTheme.colors.primaryButton),
                     contentAlignment = Alignment.Center
                 ) {
@@ -164,9 +169,10 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     )
                 }
                 IconButton(
-                    onClick = {showSettings = true}
-                ){
-                    Icon(Icons.Default.Settings,
+                    onClick = { showSettings = true }
+                ) {
+                    Icon(
+                        Icons.Default.Settings,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp),
                         tint = Color.White
@@ -188,63 +194,97 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 menuModifier = Modifier.width(300.dp)
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+
+            Box(
+                modifier = Modifier.size(200.dp),
+                contentAlignment = Alignment.Center
             ) {
-                // Make sets box
-                Box(
-                    modifier = Modifier
-                        .size(130.dp)
-                        .clip(CircleShape)
-                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
-                        .background(brush = AppTheme.colors.primaryButton),
-                    contentAlignment = Alignment.Center
+                CircularProgressIndicator(
+                    progress = { currentTotal.toFloat() / targetInDay.toFloat() },
+                    modifier = Modifier.fillMaxSize(),
+                    color = AppTheme.colors.primaryAccent,
+                    strokeWidth = 12.dp,
+                    trackColor = AppTheme.colors.primaryAccent.copy(alpha = 0.2f),
+                    strokeCap = StrokeCap.Round
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.box_makes),
-                            style = AppTheme.fonts.montBold,
-                            fontSize = 20.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = currentTotal.toString(),
-                            style = AppTheme.fonts.montBlack,
-                            fontSize = 28.sp,
-                            color = Color.White
-                        )
-                    }
-                }
-
-
-                // Target Box
-                Box(
-                    modifier = Modifier
-                        .size(130.dp)
-                        .clip(CircleShape)
-                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
-                        .background(brush = AppTheme.colors.primaryButton)
-                        .clickable { showTargetDialog = true },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.box_target),
-                            style = AppTheme.fonts.montBold,
-                            fontSize = 20.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = targetInDay.toString(),
-                            style = AppTheme.fonts.montBlack,
-                            fontSize = 28.sp,
-                            color = Color.White
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.box_makes),
+                        style = AppTheme.fonts.montBold,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = currentTotal.toString(),
+                        style = AppTheme.fonts.montBold,
+                        fontSize = 36.sp
+                    )
+                    Divider(modifier = Modifier.width(40.dp).padding(vertical = 4.dp))
+                    Text(
+                        text = "${stringResource(R.string.box_target)} $targetInDay",
+                        style = AppTheme.fonts.montBold,
+                        fontSize = 14.sp
+                    )
                 }
             }
+////            Row(
+////                modifier = Modifier.fillMaxWidth(),
+////                horizontalArrangement = Arrangement.SpaceEvenly,
+////                verticalAlignment = Alignment.CenterVertically
+////            ) {
+////                // Make sets box
+////                Box(
+////                    modifier = Modifier
+////                        .size(130.dp)
+////                        .clip(CircleShape)
+////                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
+////                        .background(brush = AppTheme.colors.primaryButton),
+////                    contentAlignment = Alignment.Center
+////                ) {
+////                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+////                        Text(
+////                            text = stringResource(R.string.box_makes),
+////                            style = AppTheme.fonts.montBold,
+////                            fontSize = 20.sp,
+////                            color = Color.White
+////                        )
+////                        Text(
+////                            text = currentTotal.toString(),
+////                            style = AppTheme.fonts.montBlack,
+////                            fontSize = 28.sp,
+////                            color = Color.White
+////                        )
+////                    }
+////                }
+//
+//
+//                // Target Box
+//                Box(
+//                    modifier = Modifier
+//                        .size(130.dp)
+//                        .clip(CircleShape)
+//                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
+//                        .background(brush = AppTheme.colors.primaryButton)
+//                        .clickable { showTargetDialog = true },
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                        Text(
+//                            text = stringResource(R.string.box_target),
+//                            style = AppTheme.fonts.montBold,
+//                            fontSize = 20.sp,
+//                            color = Color.White
+//                        )
+//                        Text(
+//                            text = targetInDay.toString(),
+//                            style = AppTheme.fonts.montBlack,
+//                            fontSize = 28.sp,
+//                            color = Color.White
+//                        )
+//                    }
+//                }
+//            }
 
             //Window with sets and count of sets
             Box(

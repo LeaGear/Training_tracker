@@ -214,8 +214,9 @@ fun DayElement(
             text = day.date.dayOfMonth.toString(),
             color = textColor,
             style = AppTheme.fonts.montBold,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold
         )
+
     }
 }
