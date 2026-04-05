@@ -48,7 +48,9 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val selectedLocalDate by viewModel.selectedLocalDate.collectAsState()
     val workoutData by viewModel.todayWorkout.collectAsState()
     val sets = workoutData?.sets ?: emptyList()
-    val target = workoutData?.workout?.target ?: 0
+    val tmTarget = workoutData?.workout?.target ?: 0
+    val target = if(tmTarget == 0) defaultTarget else tmTarget
+    //val target by viewModel.currentTarget.collectAsState()
     val currentTotal = sets.sumOf { it.reps }
 
     if (showTargetDialog) {

@@ -91,7 +91,10 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val currentExercise by viewModel.exerciseName.collectAsState()
 
     val workoutData by viewModel.todayWorkout.collectAsState()
-    val targetInDay = workoutData?.workout?.target ?: 0
+    //val targetInDay = workoutData?.workout?.target ?: 0
+    val tmTarget = workoutData?.workout?.target ?: 0
+    val targetInDay = if(tmTarget == 0) defaultTarget else tmTarget
+    //val targetInDay by viewModel.currentTarget.collectAsState()
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
     val currentSets = workoutData?.sets ?: emptyList()
 
@@ -130,6 +133,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 indication = null
             ) { focusManager.clearFocus() }
     ) {
+
         // First screen zone(up) from settings to keyboard
         Column(
             modifier = Modifier
@@ -139,8 +143,9 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).background(Color.Red),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ){
                 // Box with current date
                 Box(
@@ -369,7 +374,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             //Record button
             RecordButton(
                 mainText = stringResource(R.string.btn_main_save),
-                mainClick = { viewModel.addSet(count) },
+                mainClick = { viewModel.addSet(count, targetInDay) },
                 modifier = Modifier
                     .clip(RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp))
                     .border(

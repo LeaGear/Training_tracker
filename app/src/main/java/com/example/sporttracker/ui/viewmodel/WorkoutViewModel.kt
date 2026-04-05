@@ -161,16 +161,21 @@ class WorkoutViewModel(
     }
 
     //Добавить подход
-    fun addSet(repsCount:Int){
-        viewModelScope.launch{
+    fun addSet(repsCount: Int, target: Int) {
+        viewModelScope.launch {
             val date = _selectedDate.value
             val name = _exerciseName.value
-            val target = todayWorkout.value?.workout?.target ?: 0
 
-            val workoutId = dao.getWorkoutIdOnce(date, name)
+            val existingId = dao.getWorkoutIdOnce(date, name)
+            val workoutId = existingId
                 ?: dao.insertWorkout(
                     Workout(exerciseName = name, date = date, target = target)
                 ).toInt()
+
+            // если тренировка уже была — обновляем цель
+            if (existingId != null) {
+                dao.updateTarget(date, name, target)
+            }
 
             dao.insertSet(ExerciseSet(parentWorkoutId = workoutId, reps = repsCount))
         }
