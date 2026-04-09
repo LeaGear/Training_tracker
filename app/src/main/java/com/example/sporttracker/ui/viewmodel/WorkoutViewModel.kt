@@ -151,8 +151,8 @@ class WorkoutViewModel(
             val today = _selectedDate.value
             val name = _exerciseName.value
 
-            val workoutId: Int? = dao.getWorkoutIdOnce(today, name)
-            if (workoutId == null) {
+            val existingId = dao.getWorkoutIdOnce(today, name)
+            if (existingId == null) {
                 dao.insertWorkout(Workout(exerciseName = name, date = today, target = target))
             } else {
                 dao.updateTarget(today, name, target)
@@ -171,7 +171,6 @@ class WorkoutViewModel(
                 ?: dao.insertWorkout(
                     Workout(exerciseName = name, date = date, target = target)
                 ).toInt()
-
             // если тренировка уже была — обновляем цель
             if (existingId != null) {
                 dao.updateTarget(date, name, target)
