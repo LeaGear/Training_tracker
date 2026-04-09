@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,6 +31,7 @@ import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
+import com.example.sporttracker.ui.components.SimpleBarChart
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 
@@ -50,6 +49,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val sets = workoutData?.sets ?: emptyList()
     val tmTarget = workoutData?.workout?.target ?: 0
     val target = if(tmTarget == 0) defaultTarget else tmTarget
+    val currentMonth by viewModel.currentMonthData.collectAsState()
     //val target by viewModel.currentTarget.collectAsState()
     val currentTotal = sets.sumOf { it.reps }
 
@@ -164,26 +164,28 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             }
         }
 
+        SimpleBarChart(currentMonth, defaultTarget)
+
         // Список упражнений за этот день
-        LazyColumn {
-            items(sets) { workoutSet ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(AppTheme.shapes.mainShape)
-                        .background(AppTheme.colors.primaryButton)
-                        .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                        .padding(vertical = 12.dp), // <-- внутренний отступ для текста
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "${stringResource(R.string.str_for_reps)} -> ${workoutSet.reps}",
-                        style = AppTheme.fonts.montBold,
-                        fontSize = 26.sp,
-                        color = Color.White)
-                    }
-                }
-            }
+//        LazyColumn {
+//            items(sets) { workoutSet ->
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 4.dp)
+//                        .clip(AppTheme.shapes.mainShape)
+//                        .background(AppTheme.colors.primaryButton)
+//                        .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+//                        .padding(vertical = 12.dp), // <-- внутренний отступ для текста
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        text = "${stringResource(R.string.str_for_reps)} -> ${workoutSet.reps}",
+//                        style = AppTheme.fonts.montBold,
+//                        fontSize = 26.sp,
+//                        color = Color.White)
+//                    }
+//                }
+//            }
         }
     }

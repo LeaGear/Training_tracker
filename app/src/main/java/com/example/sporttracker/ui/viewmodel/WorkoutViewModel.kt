@@ -111,7 +111,28 @@ class WorkoutViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
+    val currentMonthData: StateFlow<List<Pair<Int, Int>>> = allWorkouts
+        .map { workouts ->
+            val now = LocalDate.now()
+            val daysInMonth = now.lengthOfMonth()
 
+            // Создаем карту: День -> Сумма репсов
+            val repsMap = workouts.filter {
+                val date = Instant.ofEpochMilli(it.workout.date)
+                    .atZone(ZoneId.systemDefault()).toLocalDate()
+                date.month == now.month && date.year == now.year
+            }.associate {
+                val day = Instant.ofEpochMilli(it.workout.date)
+                    .atZone(ZoneId.systemDefault()).toLocalDate().dayOfMonth
+                day to it.sets.sumOf { set -> set.reps }
+            }
+
+            // Заполняем все дни месяца (даже если не тренировался — ставим 0)
+            (1..daysInMonth).map { day ->
+                day to (repsMap[day] ?: 0)
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     // --- Команды ---
 
     //Изменение выбора упражнения
