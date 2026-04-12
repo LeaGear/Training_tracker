@@ -111,16 +111,21 @@ class WorkoutViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
-    val currentMonthData: StateFlow<List<Pair<Int, Int>>> = allWorkouts
-        .map { workouts ->
-            val now = LocalDate.now()
-            val daysInMonth = now.lengthOfMonth()
+    val monthData: StateFlow<List<Pair<Int, Int>>> = combine(allWorkouts, _selectedDate){
+        workouts, selectedMillis ->
+            val selectedDate = Instant.ofEpochMilli(selectedMillis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+            val targetMonth = selectedDate.month
+            val targetYear = selectedDate.year
+            val daysInMonth = selectedDate.lengthOfMonth()
 
             // Создаем карту: День -> Сумма репсов
             val repsMap = workouts.filter {
-                val date = Instant.ofEpochMilli(it.workout.date)
+                val workoutDate = Instant.ofEpochMilli(it.workout.date)
                     .atZone(ZoneId.systemDefault()).toLocalDate()
-                date.month == now.month && date.year == now.year
+
+                workoutDate.month == targetMonth && workoutDate.year == targetYear
             }.associate {
                 val day = Instant.ofEpochMilli(it.workout.date)
                     .atZone(ZoneId.systemDefault()).toLocalDate().dayOfMonth
@@ -133,6 +138,18 @@ class WorkoutViewModel(
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val dateForChart: StateFlow<Pair<Int, Int>> = _selectedDate
+        .map{ millis ->
+            val date = Instant.ofEpochMilli(millis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+
+                date.dayOfMonth to date.monthValue
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1 to 1)
+
+
     // --- Команды ---
 
     //Изменение выбора упражнения

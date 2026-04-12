@@ -49,9 +49,11 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val sets = workoutData?.sets ?: emptyList()
     val tmTarget = workoutData?.workout?.target ?: 0
     val target = if(tmTarget == 0) defaultTarget else tmTarget
-    val currentMonth by viewModel.currentMonthData.collectAsState()
+    val currentMonth by viewModel.monthData.collectAsState()
     //val target by viewModel.currentTarget.collectAsState()
     val currentTotal = sets.sumOf { it.reps }
+    val dateForChart by viewModel.dateForChart.collectAsState()
+
 
     if (showTargetDialog) {
         SetTargetWindow(
@@ -164,7 +166,11 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             }
         }
 
-        SimpleBarChart(currentMonth, defaultTarget)
+        SimpleBarChart(
+            currentMonth,
+            defaultTarget,
+            dateForChart
+        )
 
         // Список упражнений за этот день
 //        LazyColumn {
