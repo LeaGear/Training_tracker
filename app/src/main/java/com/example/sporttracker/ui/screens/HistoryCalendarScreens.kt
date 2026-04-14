@@ -111,7 +111,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     .fillMaxSize()
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(AppTheme.colors.primaryButton),
+                    .background(AppTheme.colors.testBackColor),
                 contentAlignment = Alignment.Center
             ){
                 Column(
@@ -140,7 +140,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     .fillMaxSize()
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(AppTheme.colors.primaryButton)
+                    .background(AppTheme.colors.primaryElementColor)
                     .clickable{showTargetDialog = true},
                 contentAlignment = Alignment.Center
             ){

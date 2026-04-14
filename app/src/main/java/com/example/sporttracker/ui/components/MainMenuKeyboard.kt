@@ -54,7 +54,7 @@ fun AddSubtractButtons(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(brush = AppTheme.colors.primaryButton),
+                        .background(AppTheme.colors.primaryElementColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -80,7 +80,7 @@ fun RecordButton(
         modifier = modifier
             .size(width = 250.dp, height = 60.dp)
             .clickable { mainClick() } // Теперь клик работает точно по форме полукруга
-            .background(brush = AppTheme.colors.primaryButton)
+            .background(AppTheme.colors.primaryElementColor)
             .padding(10.dp),
         contentAlignment = Alignment.Center
     ) {

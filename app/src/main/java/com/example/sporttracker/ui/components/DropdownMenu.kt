@@ -64,7 +64,7 @@ fun DropdownExerciseMenu(
                 .menuAnchor()
                 .fillMaxSize()
                 .clip(AppTheme.shapes.mainShape)
-                .background(AppTheme.colors.primaryButton)
+                .background(AppTheme.colors.primaryElementColor)
                 .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
             contentAlignment = Alignment.Center
         ){
@@ -81,7 +81,7 @@ fun DropdownExerciseMenu(
             shape = AppTheme.shapes.mainShape,
             modifier = menuModifier
                 //.clip(AppTheme.shapes.mainShape)
-                .background(AppTheme.colors.primaryButton)
+                .background(AppTheme.colors.primaryElementColor)
                 //.border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
                 .padding(10.dp)
         ){

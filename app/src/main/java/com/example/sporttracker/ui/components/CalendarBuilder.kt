@@ -73,7 +73,7 @@ fun SetTrackerCalendar(
             .size(height = 40.dp, width = 180.dp)
             .clip(AppTheme.shapes.mainShape)
             .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-            .background(AppTheme.colors.primaryButton),
+            .background(AppTheme.colors.testBackColor),
             contentAlignment = Alignment.Center
         ){
             Text(
@@ -95,7 +95,7 @@ fun SetTrackerCalendar(
                     .height(350.dp)
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(AppTheme.colors.calendarInProgressEnd.copy(alpha = 0.2f))
+                    .background(AppTheme.colors.testBackColor)
             )
 
             HorizontalCalendar(modifier = Modifier.padding(6.dp),
@@ -193,7 +193,7 @@ fun DayElement(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(brush = AppTheme.colors.primaryButton, CircleShape)
+                    .background(AppTheme.colors.primaryElementColor, CircleShape)
                     .border(AppTheme.shapes.primaryBorder.copy(width = 2.dp), CircleShape)// Твой оранжевый акцент
             )
         }

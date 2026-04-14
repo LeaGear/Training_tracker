@@ -158,7 +158,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                             border = AppTheme.shapes.primaryBorder,
                             shape = RoundedCornerShape(14.dp)
                         )
-                        .background(brush = AppTheme.colors.primaryButton),
+                        .background(AppTheme.colors.testBackColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -228,63 +228,6 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     )
                 }
             }
-////            Row(
-////                modifier = Modifier.fillMaxWidth(),
-////                horizontalArrangement = Arrangement.SpaceEvenly,
-////                verticalAlignment = Alignment.CenterVertically
-////            ) {
-////                // Make sets box
-////                Box(
-////                    modifier = Modifier
-////                        .size(130.dp)
-////                        .clip(CircleShape)
-////                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
-////                        .background(brush = AppTheme.colors.primaryButton),
-////                    contentAlignment = Alignment.Center
-////                ) {
-////                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-////                        Text(
-////                            text = stringResource(R.string.box_makes),
-////                            style = AppTheme.fonts.montBold,
-////                            fontSize = 20.sp,
-////                            color = Color.White
-////                        )
-////                        Text(
-////                            text = currentTotal.toString(),
-////                            style = AppTheme.fonts.montBlack,
-////                            fontSize = 28.sp,
-////                            color = Color.White
-////                        )
-////                    }
-////                }
-//
-//
-//                // Target Box
-//                Box(
-//                    modifier = Modifier
-//                        .size(130.dp)
-//                        .clip(CircleShape)
-//                        .border(border = AppTheme.shapes.primaryBorder, shape = CircleShape)
-//                        .background(brush = AppTheme.colors.primaryButton)
-//                        .clickable { showTargetDialog = true },
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                        Text(
-//                            text = stringResource(R.string.box_target),
-//                            style = AppTheme.fonts.montBold,
-//                            fontSize = 20.sp,
-//                            color = Color.White
-//                        )
-//                        Text(
-//                            text = targetInDay.toString(),
-//                            style = AppTheme.fonts.montBlack,
-//                            fontSize = 28.sp,
-//                            color = Color.White
-//                        )
-//                    }
-//                }
-//            }
 
             //Window with sets and count of sets
             Box(
@@ -308,7 +251,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .border(3.dp, AppTheme.colors.repsBorder, RoundedCornerShape(8.dp))
-                                .background(AppTheme.colors.primaryButton)
+                                .background(AppTheme.colors.primaryElementColor)
                                 .combinedClickable(
                                     onClick = {
                                         Toast.makeText(
@@ -354,7 +297,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                         border = AppTheme.shapes.primaryBorder,
                         shape = RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp)
                     )
-                    .background(brush = AppTheme.colors.primaryButton)
+                    .background(AppTheme.colors.primaryElementColor)
                     .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {

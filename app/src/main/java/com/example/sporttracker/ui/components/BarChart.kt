@@ -3,6 +3,7 @@ package com.example.sporttracker.ui.components
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -56,8 +56,10 @@ fun SimpleBarChart(
         .replaceFirstChar { it.uppercase() }
     //val todayIndex = LocalDate.now().dayOfMonth - 1
     val todayIndex = selectedDay - 1
-    val startColor = AppTheme.colors.calendarCompletedStart
-    val endColor = AppTheme.colors.calendarCompletedEnd
+    val completedDayStart = AppTheme.colors.calendarCompletedStart
+    val completedDayEnd = AppTheme.colors.calendarCompletedEnd
+    val progressDayStart = AppTheme.colors.calendarInProgressStart
+    val progressDayEnd = AppTheme.colors.calendarInProgressEnd
     val defaultBarColor = Color(0xFFFFA000)
 
 
@@ -83,7 +85,8 @@ fun SimpleBarChart(
             .fillMaxWidth()
             .height(200.dp)
             .clip(AppTheme.shapes.mainShape)
-            .background(Color.DarkGray) // Статичный фон
+            .background(AppTheme.colors.testBackColor) // Статичный фон
+            .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -136,11 +139,15 @@ fun SimpleBarChart(
 
                         val barBrush = if (point.second >= defaultTarget && defaultTarget > 0) {
                             Brush.linearGradient(
-                                colors = listOf(startColor, endColor),
+                                colors = listOf(completedDayStart, completedDayEnd),
                                 start = Offset(0f, barHeight),
                                 end = Offset(0f, size.height)
                             ) }else {
-                                SolidColor(defaultBarColor)
+                            Brush.linearGradient(
+                                colors = listOf(progressDayStart, progressDayEnd),
+                                start = Offset(0f, barHeight),
+                                end = Offset(0f, size.height)
+                            )
                             }
                         drawRoundRect(
                             brush = barBrush,
@@ -184,9 +191,10 @@ fun SimpleBarChart(
                             modifier = Modifier
                                 .size(barWidthDp)
                                 .clip(CircleShape)
-                                .background(
-                                    if (index == todayIndex) AppTheme.colors.repsBorder else Color.Transparent
-                                ), //С бекграундом должен быть только текущий день
+//                                .background(
+//                                    if (index == todayIndex) AppTheme.colors.primaryElementColor else SolidColor(Color.Transparent)
+//                                )
+                            ,
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
