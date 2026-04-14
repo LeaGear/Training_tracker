@@ -75,10 +75,12 @@ val LightPalette = AppColors(
 //        colors = listOf(Color(0xFFFBAC5D).copy(alpha = 0.5f), Color(0xFFF28B31).copy(alpha = 0.5f))
 //    ),
     primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.6f),
+    //primaryElementColor = Color(0xFFF27735).copy(alpha = 0.6f),
     calendarHighlight = Color(0xFFFF4081),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
-    testBackColor = Color(0xFFF27735).copy(alpha = 0.4f),
+    //testBackColor = Color(0xFFFF5E00).copy(alpha = 0.6f),
+    testBackColor = Color(0xFFF27735).copy(alpha = 0.6f),
 
     calendarCompletedStart = Color(0xFF00FF1E),
     calendarCompletedEnd = Color(0xFF38A342),

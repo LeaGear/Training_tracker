@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -85,9 +86,18 @@ fun SimpleBarChart(
             .fillMaxWidth()
             .height(200.dp)
             .clip(AppTheme.shapes.mainShape)
-            .background(AppTheme.colors.testBackColor) // Статичный фон
-            .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+            //.background(AppTheme.colors.testBackColor) // Статичный фон
+            //.blur(12.dp)
+            //.border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
     ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(AppTheme.colors.testBackColor)
+                .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
+                .blur(20.dp)
+        )
+
         Column(
             modifier = Modifier.fillMaxSize()
         ){

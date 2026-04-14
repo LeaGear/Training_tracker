@@ -95,7 +95,6 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             menuModifier = Modifier.width(380.dp)
         )
 
-        // Здесь можно добавить список подходов (LazyColumn) ниже календаря
         //Табличка количества за день и цели за день с возможностью изменения
         Row(
             modifier = Modifier
@@ -171,27 +170,5 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
             defaultTarget,
             dateForChart
         )
-
-        // Список упражнений за этот день
-//        LazyColumn {
-//            items(sets) { workoutSet ->
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 4.dp)
-//                        .clip(AppTheme.shapes.mainShape)
-//                        .background(AppTheme.colors.primaryButton)
-//                        .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-//                        .padding(vertical = 12.dp), // <-- внутренний отступ для текста
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Text(
-//                        text = "${stringResource(R.string.str_for_reps)} -> ${workoutSet.reps}",
-//                        style = AppTheme.fonts.montBold,
-//                        fontSize = 26.sp,
-//                        color = Color.White)
-//                    }
-//                }
-//            }
-        }
     }
+}
