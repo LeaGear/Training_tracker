@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -158,7 +159,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                             border = AppTheme.shapes.primaryBorder,
                             shape = RoundedCornerShape(14.dp)
                         )
-                        .background(AppTheme.colors.testBackColor),
+                        .background(AppTheme.colors.primaryElementColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -202,9 +203,9 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 CircularProgressIndicator(
                     progress = { currentTotal.toFloat() / targetInDay.toFloat() },
                     modifier = Modifier.fillMaxSize(),
-                    color = AppTheme.colors.primaryAccent,
+                    color = AppTheme.colors.primaryElementColor.copy(alpha = 0.7f),
                     strokeWidth = 12.dp,
-                    trackColor = AppTheme.colors.primaryAccent.copy(alpha = 0.2f),
+                    trackColor = AppTheme.colors.primaryElementColor.copy(alpha = 0.2f),
                     strokeCap = StrokeCap.Round
                 )
                 Column(
@@ -234,8 +235,14 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 modifier = Modifier
                     .size(width = 309.dp, height = 156.dp)
                     .clip(AppTheme.shapes.mainShape)
-                    .border(4.dp, AppTheme.colors.repsBorder, AppTheme.shapes.mainShape)
+                    .border(4.dp, AppTheme.colors.repsBorder.copy(alpha = 0.4f), AppTheme.shapes.mainShape)
             ) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(Color.White.copy(alpha = 0.4f))
+                        .blur(12.dp)
+                )
                 val holdToDeleteText = stringResource(R.string.hold_to_delete)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(6),

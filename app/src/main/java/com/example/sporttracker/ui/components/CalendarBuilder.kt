@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,7 +74,7 @@ fun SetTrackerCalendar(
             .size(height = 40.dp, width = 180.dp)
             .clip(AppTheme.shapes.mainShape)
             .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-            .background(AppTheme.colors.testBackColor),
+            .background(AppTheme.colors.primaryElementColor),
             contentAlignment = Alignment.Center
         ){
             Text(
@@ -86,7 +87,7 @@ fun SetTrackerCalendar(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        //Задний фон календаря, пока НЕУДАЧНЫЙ вариант
+        //Задний фон календаря
         Box(
         ){
             Box(
@@ -95,7 +96,7 @@ fun SetTrackerCalendar(
                     .height(350.dp)
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(AppTheme.colors.testBackColor)
+                    .background(AppTheme.colors.primaryElementColor)
             )
 
             HorizontalCalendar(modifier = Modifier.padding(6.dp),
@@ -147,10 +148,7 @@ fun DayElement(
             listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
                 colors.calendarDefaultDay.copy(alpha = 0.4f))
         )
-        target == 0 -> Brush.linearGradient(
-            listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
-                colors.calendarDefaultDay.copy(alpha = 0.4f))
-        )
+        target == 0 -> SolidColor(AppTheme.colors.settingsBack.copy(alpha = 0.4f))
         total >= target -> Brush.linearGradient(
             listOf(colors.calendarCompletedStart, colors.calendarCompletedEnd)
         )
@@ -163,52 +161,44 @@ fun DayElement(
     }
 
     val dateBorder = when {
-        target == 0    -> Color.Transparent
+        target == 0    -> colors.settingsBack
         total >= target -> colors.calendarCompletedBorder
         total > 0      -> colors.calendarInProgressBorder
         else           -> colors.calendarNotStartedBorder
+    }
+    val dateShape =  when{
+        isSelected -> StarShape
+        else -> CircleShape
+    }
+    //Закрашивание цифры в зависимости от даты
+    val textColor = when {
+        isSelected -> Color.White
+        day.position != DayPosition.MonthDate -> AppTheme.colors.calendarOtherMonths
+        else -> MaterialTheme.colorScheme.onSurface
     }
 
     //Обьект кнопки даты
     Box(
         modifier = Modifier
-            .aspectRatio(1f) // Квадратные ячейки
+            .aspectRatio(1f)
             .padding(4.dp)
-            .clip(CircleShape)
+            .clip(dateShape)
             .clickable(
                 enabled = day.position == DayPosition.MonthDate,
                 onClick = { onClick(day) }
             ),
         contentAlignment = Alignment.Center
     ) {
-        //Закрашивание цифры в зависимости от даты
-        val textColor = when {
-            isSelected -> Color.White
-            day.position != DayPosition.MonthDate -> AppTheme.colors.calendarOtherMonths
-            else -> MaterialTheme.colorScheme.onSurface
-        }
-
         //Цвет выделенной даты
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(AppTheme.colors.primaryElementColor, CircleShape)
-                    .border(AppTheme.shapes.primaryBorder.copy(width = 2.dp), CircleShape)// Твой оранжевый акцент
-            )
-        }
-        //Цвет остальных дат
-        else{
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = dateBrush,
-                        shape = CircleShape
-                    )
-                    .border(2.dp, dateBorder , CircleShape)
-            )
-        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = dateBrush,
+                    shape = dateShape
+                )
+                .border(2.dp, dateBorder, dateShape)
+        )
         //Дата в ячейке календаря
         Text(
             text = day.date.dayOfMonth.toString(),

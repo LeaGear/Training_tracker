@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -110,7 +111,7 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     .fillMaxSize()
                     .clip(AppTheme.shapes.mainShape)
                     .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                    .background(AppTheme.colors.testBackColor),
+                    .background(AppTheme.colors.primaryElementColor),
                 contentAlignment = Alignment.Center
             ){
                 Column(
@@ -143,6 +144,11 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
                     .clickable{showTargetDialog = true},
                 contentAlignment = Alignment.Center
             ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(20.dp)
+                )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,

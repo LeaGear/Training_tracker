@@ -26,7 +26,6 @@ data class AppColors(
     val calendarHighlight: Color,
     val primaryAccent: Color,
     val repsBorder: Color,
-    val testBackColor: Color,
 
     // Календарь — статус дня
     val calendarCompletedStart: Color,    // выполнено — градиент начало
@@ -71,16 +70,11 @@ val LocalAppFonts = staticCompositionLocalOf<AppFonts> {
     error("No typography provided")
 }
 val LightPalette = AppColors(
-//    primaryElementColor = Brush.verticalGradient(
-//        colors = listOf(Color(0xFFFBAC5D).copy(alpha = 0.5f), Color(0xFFF28B31).copy(alpha = 0.5f))
-//    ),
-    primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.6f),
+    primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.5f),
     //primaryElementColor = Color(0xFFF27735).copy(alpha = 0.6f),
     calendarHighlight = Color(0xFFFF4081),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
-    //testBackColor = Color(0xFFFF5E00).copy(alpha = 0.6f),
-    testBackColor = Color(0xFFF27735).copy(alpha = 0.6f),
 
     calendarCompletedStart = Color(0xFF00FF1E),
     calendarCompletedEnd = Color(0xFF38A342),
@@ -105,12 +99,11 @@ val LightPalette = AppColors(
     settingsBorder = Color(0xFF007A85)
 )
 val DarkPalette = AppColors(
-    //primaryElementColor = Brush.verticalGradient(colors = listOf(Color(0xFFFBAC5D), Color(0xFFF28B31))),
-    primaryElementColor = Color(0xFFFF5E00),
+    primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.5f),
+    //primaryElementColor = Color(0xFFF27735).copy(alpha = 0.6f),
     calendarHighlight = Color(0xFFFF79B0),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
-    testBackColor = Color(0xFFF27735).copy(alpha = 0.4f),
 
     calendarCompletedStart = Color(0xFF00CC18),
     calendarCompletedEnd = Color(0xFF2D8A36),

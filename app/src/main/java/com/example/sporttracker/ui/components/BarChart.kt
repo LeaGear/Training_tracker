@@ -93,7 +93,7 @@ fun SimpleBarChart(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(AppTheme.colors.testBackColor)
+                .background(AppTheme.colors.primaryElementColor)
                 .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
                 .blur(20.dp)
         )
