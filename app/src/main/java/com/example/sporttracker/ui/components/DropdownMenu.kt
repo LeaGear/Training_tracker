@@ -3,17 +3,24 @@ package com.example.sporttracker.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +66,7 @@ fun DropdownExerciseMenu(
         onExpandedChange = {expanded = !expanded},
         modifier = modifier
     ){
+        //Box on main screen or calendar where containing current exercise name
         Box(
             modifier = Modifier
                 .menuAnchor()
@@ -68,6 +76,7 @@ fun DropdownExerciseMenu(
                 .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape),
             contentAlignment = Alignment.Center
         ){
+            //Name of current exercise
             Text(
                 text = currentExercise,
                 style = AppTheme.fonts.montBold,
@@ -88,16 +97,31 @@ fun DropdownExerciseMenu(
             exercises.forEach { exercise ->
                 DropdownMenuItem(
                     text = {
-                        Text(
-                            exercise.name,
-                            style = AppTheme.fonts.montBold,
-                            color = Color.White
-                        )
-                    },
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(24.dp).background(Color.Red),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                //modifier = Modifier.weight(1f),
+                                text = exercise.name,
+                                style = AppTheme.fonts.montBold,
+                                color = Color.White
+                            )
+                            VerticalDivider(
+                                modifier = modifier.fillMaxHeight(0.9f),
+                                thickness = 2.dp,
+                                color = Color.LightGray
+                            )
+                        }
+
+                           },
                     trailingIcon = {
                         // Кнопка удаления упражнения из списка
-                        IconButton(onClick = {onExerciseDeleted(exercise.name) }) {
-                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.description_delete))
+                        IconButton(onClick = { onExerciseDeleted(exercise.name) }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.description_delete)
+                            )
                         }
                     },
                     onClick = {
@@ -105,6 +129,11 @@ fun DropdownExerciseMenu(
                         expanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
+                HorizontalDivider(
+                    modifier = Modifier.width(200.dp).align(Alignment.CenterHorizontally),
+                    thickness = 2.dp,
+                    color = Color.LightGray,
                 )
             }
             DropdownMenuItem(//modifier = Modifier
