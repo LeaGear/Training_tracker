@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -29,6 +28,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -55,14 +55,11 @@ fun SimpleBarChart(
     val monthForChart = Month.of(selectedMonth)
         .getDisplayName(TextStyle.FULL_STANDALONE, Locale("ru"))
         .replaceFirstChar { it.uppercase() }
-    //val todayIndex = LocalDate.now().dayOfMonth - 1
     val todayIndex = selectedDay - 1
-    val completedDayStart = AppTheme.colors.calendarCompletedStart
-    val completedDayEnd = AppTheme.colors.calendarCompletedEnd
+    val completedDayStart = AppTheme.colors.calendarCompletedEnd // Dark Green
+    val completedDayEnd = AppTheme.colors.calendarCompletedStart // Light Green
     val progressDayStart = AppTheme.colors.calendarInProgressStart
     val progressDayEnd = AppTheme.colors.calendarInProgressEnd
-    val defaultBarColor = Color(0xFFFFA000)
-
 
     // Используем LaunchedEffect, чтобы скролл сработал при запуске экрана
     LaunchedEffect(key1 = todayIndex) {
@@ -86,16 +83,12 @@ fun SimpleBarChart(
             .fillMaxWidth()
             .height(200.dp)
             .clip(AppTheme.shapes.mainShape)
-            //.background(AppTheme.colors.testBackColor) // Статичный фон
-            //.blur(12.dp)
-            //.border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
     ) {
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(AppTheme.colors.primaryElementColor)
                 .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
-                .blur(20.dp)
         )
 
         Column(
@@ -105,7 +98,6 @@ fun SimpleBarChart(
                 modifier = Modifier
                     .width(totalWidthDp)
                     .weight(0.1f)
-                    //.background(Color.Blue),
                 ,contentAlignment = Alignment.Center
             ){
                 Text(
@@ -129,8 +121,7 @@ fun SimpleBarChart(
                     modifier = Modifier
                         .width(totalWidthDp) // Устанавливаем ширину Canvas
                         .weight(0.85f) // Устанавливаем высоту Canvas
-                        //.background(Color.LightGray)
-                    .padding(vertical = 4.dp)
+                        .padding(vertical = 4.dp)
                 ) {
 
                     val barWidthPx = barWidthDp.toPx()
@@ -151,8 +142,8 @@ fun SimpleBarChart(
                             Brush.linearGradient(
                                 colors = listOf(completedDayStart, completedDayEnd),
                                 start = Offset(0f, barHeight),
-                                end = Offset(0f, size.height)
-                            ) }else {
+                                end = Offset(0f, size.height - barHeight)
+                            ) } else {
                             Brush.linearGradient(
                                 colors = listOf(progressDayStart, progressDayEnd),
                                 start = Offset(0f, barHeight),
@@ -194,17 +185,19 @@ fun SimpleBarChart(
                     modifier = Modifier
                         .width(barWidthDp * data.size)
                         .weight(0.15f)
-                        //.background(Color.Red)
                 ) {
                     data.forEachIndexed { index, _ ->
                         Box(
                             modifier = Modifier
                                 .size(barWidthDp)
                                 .clip(CircleShape)
-//                                .background(
-//                                    if (index == todayIndex) AppTheme.colors.primaryElementColor else SolidColor(Color.Transparent)
-//                                )
-                            ,
+                                .background(
+                                    if (index == todayIndex) {
+                                        Brush.linearGradient(listOf(progressDayStart, progressDayEnd))
+                                    } else {
+                                        SolidColor(Color.Transparent)
+                                    }
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

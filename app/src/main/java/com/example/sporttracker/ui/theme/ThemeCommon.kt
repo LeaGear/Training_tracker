@@ -17,7 +17,8 @@ import com.example.sporttracker.R
 val myCustomFontFamily = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
-    Font(R.font.montserrat_black, FontWeight.Black)
+    Font(R.font.montserrat_black, FontWeight.Black),
+    Font(R.font.sekuya_regular, FontWeight.Bold)
 )
 // Описываем структуру цветов
 data class AppColors(
@@ -55,7 +56,8 @@ data class AppShapes(
 data class AppFonts(
     val montRegular: TextStyle,
     val montBold: TextStyle,
-    val montBlack: TextStyle
+    val montBlack: TextStyle,
+    val sekuyaBold: TextStyle
 )
 
 
@@ -145,6 +147,10 @@ val appFonts = AppFonts(
     montBlack = TextStyle(
         fontFamily = myCustomFontFamily,
         fontWeight = FontWeight.Black
+    ),
+    sekuyaBold = TextStyle(
+        fontFamily = myCustomFontFamily,
+        fontWeight = FontWeight.Bold
     )
 )
 object AppTheme {

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -136,11 +136,10 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 indication = null
             ) { focusManager.clearFocus() }
     ) {
-
-        // First screen zone(up) from settings to keyboard
+        // First screen zone(up) elements: date, settings, exercise
         Column(
             modifier = Modifier
-                .weight(1f)
+                .weight(0.15f)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
@@ -179,8 +178,9 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                         tint = Color.White
                     )
                 }
-
             }
+
+            //Element for choosing/add/delete exercise
             DropdownExerciseMenu(
                 exercises = exercises,
                 currentExercise = currentExercise,
@@ -195,11 +195,26 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 menuModifier = Modifier.width(300.dp)
             )
 
+        }
 
+        //Second screen zone(middle) elements: counter, sets table
+        Column(
+            modifier = Modifier
+                .weight(0.5f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
             Box(
                 modifier = Modifier.size(200.dp),
                 contentAlignment = Alignment.Center
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(176.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.6f))
+                )
                 CircularProgressIndicator(
                     progress = { currentTotal.toFloat() / targetInDay.toFloat() },
                     modifier = Modifier.fillMaxSize(),
@@ -213,19 +228,22 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 ) {
                     Text(
                         text = stringResource(R.string.box_makes),
-                        style = AppTheme.fonts.montBold,
-                        fontSize = 14.sp
+                        style = AppTheme.fonts.sekuyaBold,
+                        fontSize = 18.sp,
+                        color = Color(0xFFD3732F)
                     )
                     Text(
                         text = currentTotal.toString(),
-                        style = AppTheme.fonts.montBold,
-                        fontSize = 36.sp
+                        style = AppTheme.fonts.sekuyaBold,
+                        fontSize = 40.sp,
+                        color = Color(0xFFD3732F)
                     )
-                    Divider(modifier = Modifier.width(40.dp).padding(vertical = 4.dp))
+                    Divider(modifier = Modifier.width(70.dp).padding(vertical = 4.dp))
                     Text(
                         text = "${stringResource(R.string.box_target)} $targetInDay",
-                        style = AppTheme.fonts.montBold,
-                        fontSize = 14.sp
+                        style = AppTheme.fonts.sekuyaBold,
+                        fontSize = 18.sp,
+                        color = Color(0xFFD3732F)
                     )
                 }
             }
@@ -257,7 +275,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                             modifier = Modifier
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(8.dp))
-                                .border(3.dp, AppTheme.colors.repsBorder, RoundedCornerShape(8.dp))
+                                .border(AppTheme.shapes.primaryBorder, RoundedCornerShape(8.dp))
                                 .background(AppTheme.colors.primaryElementColor)
                                 .combinedClickable(
                                     onClick = {
@@ -287,11 +305,11 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
 
         }
 
-        // Second part of screen(down)
+        // Third part of screen(down) user keyboard
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(340.dp),
+                .weight(0.35f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -375,3 +393,4 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
         }
     }
 }
+

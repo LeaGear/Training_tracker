@@ -21,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sporttracker.data.db.WorkoutDatabase
 import com.example.sporttracker.ui.screens.HistoryCalendarScreen
 import com.example.sporttracker.ui.screens.PushUpCounterScreen
-import com.example.sporttracker.ui.screens.StatScreen
 import com.example.sporttracker.ui.theme.SportTrackerTheme
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModelFactory
@@ -65,7 +64,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(viewModelWorkout: WorkoutViewModel){
     val pagerState = rememberPagerState(
         initialPage = 1,
-        pageCount = {3})
+        pageCount = {2})
     Box(modifier = Modifier.fillMaxSize()){
         HorizontalPager(
             state = pagerState,
@@ -74,7 +73,6 @@ fun MainScreen(viewModelWorkout: WorkoutViewModel){
             when(page){
                 0 -> HistoryCalendarScreen(viewModelWorkout)
                 1 -> PushUpCounterScreen(viewModelWorkout)
-                2 -> StatScreen()
             }
         }
     }
