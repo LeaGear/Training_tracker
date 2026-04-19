@@ -27,6 +27,7 @@ data class AppColors(
     val calendarHighlight: Color,
     val primaryAccent: Color,
     val repsBorder: Color,
+    val dropMenuElement: Brush,
 
     // Календарь — статус дня
     val calendarCompletedStart: Color,    // выполнено — градиент начало
@@ -77,6 +78,13 @@ val LightPalette = AppColors(
     calendarHighlight = Color(0xFFFF4081),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
+    dropMenuElement = Brush.verticalGradient(
+        colors =
+        listOf(
+            Color(0xFFFF5E00).copy(alpha = 0.5f),
+            Color(0xFFF27735).copy(alpha = 0.6f)
+        )
+    ),
 
     calendarCompletedStart = Color(0xFF00FF1E),
     calendarCompletedEnd = Color(0xFF38A342),
@@ -96,9 +104,9 @@ val LightPalette = AppColors(
 
     settingsBack = Color(0xFFE0F4F6),
     settingsElement = Brush.verticalGradient(
-        colors = listOf(Color(0xFF00A8B5), Color(0xFF007A85))
+        colors = listOf(Color(0xFF00A8B5).copy(alpha = 0.7f), Color(0xFF007A85).copy(alpha = 0.7f))
     ),
-    settingsBorder = Color(0xFF007A85)
+    settingsBorder = Color(0xFF007A85).copy(alpha = 0.7f)
 )
 val DarkPalette = AppColors(
     primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.5f),
@@ -106,6 +114,13 @@ val DarkPalette = AppColors(
     calendarHighlight = Color(0xFFFF79B0),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
+    dropMenuElement = Brush.verticalGradient(
+        colors =
+            listOf(
+                Color(0xFFFF5E00).copy(alpha = 0.5f),
+                Color(0xFFF27735).copy(alpha = 0.6f)
+            )
+    ),
 
     calendarCompletedStart = Color(0xFF00CC18),
     calendarCompletedEnd = Color(0xFF2D8A36),
@@ -125,9 +140,9 @@ val DarkPalette = AppColors(
 
     settingsBack = Color(0xFF0D3B40),
     settingsElement = Brush.verticalGradient(
-        colors = listOf(Color(0xFF00C2D1), Color(0xFF009BAA))
+        colors = listOf(Color(0xFF00C2D1).copy(alpha = 0.7f), Color(0xFF009BAA).copy(alpha = 0.7f))
     ),
-    settingsBorder = Color(0xFF009BAA)
+    settingsBorder = Color(0xFF009BAA).copy(alpha = 0.7f)
 )
  val appShapes = AppShapes(
      primaryBorder = BorderStroke(width = 4.dp, color = Color(0xFFFF840B).copy(alpha = 0.3f)),//DCB07A

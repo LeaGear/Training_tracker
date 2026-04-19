@@ -94,24 +94,22 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val currentExercise by viewModel.exerciseName.collectAsState()
 
     val workoutData by viewModel.todayWorkout.collectAsState()
-    //val targetInDay = workoutData?.workout?.target ?: 0
     val tmTarget = workoutData?.workout?.target ?: 0
     val targetInDay = if (tmTarget == 0) defaultTarget else tmTarget
-    //val targetInDay by viewModel.currentTarget.collectAsState()
     val currentTotal = workoutData?.sets?.sumOf { it.reps } ?: 0
     val currentSets = workoutData?.sets ?: emptyList()
 
     if (showSettings) {
         ModalBottomSheet(
             onDismissRequest = { showSettings = false },
-            containerColor = AppTheme.colors.settingsBack
+            containerColor = AppTheme.colors.settingsBack.copy(alpha = 0.7f)
         ) {
             // сюда помещаешь содержимое настроек
             SettingsContent(
                 defaultTarget = defaultTarget,
-                language = language,
                 onDefaultTargetChanged = { viewModel.setDefaultTarget(it) },
-                onLanguageChanged = { viewModel.setLanguage(it) },
+                selectedLanguage = language,
+                onLanguageChange = { viewModel.changeLanguage(it) },
                 onDismiss = { showSettings = false }
             )
         }

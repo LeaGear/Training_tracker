@@ -42,7 +42,8 @@ import java.util.Locale
 fun SimpleBarChart(
     data: List<Pair<Int, Int>>,
     defaultTarget: Int,
-    selectedDate: Pair<Int,Int>
+    selectedDate: Pair<Int,Int>,
+    language: String
 ) {
     // Если данных нет, график не рисуем или рисуем заглушку
 // 1. Достаем плотность экрана в начале Composable функции
@@ -53,7 +54,7 @@ fun SimpleBarChart(
     val selectedDay = selectedDate.first
     val selectedMonth = selectedDate.second
     val monthForChart = Month.of(selectedMonth)
-        .getDisplayName(TextStyle.FULL_STANDALONE, Locale("ru"))
+        .getDisplayName(TextStyle.FULL_STANDALONE, Locale(language))
         .replaceFirstChar { it.uppercase() }
     val todayIndex = selectedDay - 1
     val completedDayStart = AppTheme.colors.calendarCompletedEnd // Dark Green

@@ -43,7 +43,8 @@ import java.util.Locale
 fun SetTrackerCalendar(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
-    workoutByDate: Map<LocalDate, Pair<Int, Int>>
+    workoutByDate: Map<LocalDate, Pair<Int, Int>>,
+    language: String
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(50) }
@@ -64,7 +65,7 @@ fun SetTrackerCalendar(
     ) {
         // Заголовок месяца (например: Март 2026)
         val visibleMonth = state.firstVisibleMonth.yearMonth
-        val monthName = visibleMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("ru"))
+        val monthName = visibleMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale(language))
 
         //Месяц и год для заголовка
         val monthYearText = "${monthName.replaceFirstChar { it.uppercase() }} ${visibleMonth.year}"

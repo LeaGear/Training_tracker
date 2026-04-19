@@ -51,9 +51,9 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val tmTarget = workoutData?.workout?.target ?: 0
     val target = if(tmTarget == 0) defaultTarget else tmTarget
     val currentMonth by viewModel.monthData.collectAsState()
-    //val target by viewModel.currentTarget.collectAsState()
     val currentTotal = sets.sumOf { it.reps }
     val dateForChart by viewModel.dateForChart.collectAsState()
+    val currentLanguage by viewModel.language.collectAsState()
 
 
     if (showTargetDialog) {
@@ -78,7 +78,8 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
         SetTrackerCalendar(
             selectedDate = selectedLocalDate,
             onDateSelected = { localDate -> viewModel.changeDate(localDate)},
-            workoutByDate = allWorkouts
+            workoutByDate = allWorkouts,
+            language = currentLanguage
         )
 
         DropdownExerciseMenu(
@@ -174,7 +175,8 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
         SimpleBarChart(
             currentMonth,
             defaultTarget,
-            dateForChart
+            dateForChart,
+            currentLanguage
         )
     }
 }

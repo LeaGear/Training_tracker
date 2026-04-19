@@ -76,6 +76,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.2")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     // ВАЖНО: Закомментируй или удали ВСЕ строки с libs.androidx.compose...
     // и ОБЯЗАТЕЛЬНО удали/закомментируй BOM:

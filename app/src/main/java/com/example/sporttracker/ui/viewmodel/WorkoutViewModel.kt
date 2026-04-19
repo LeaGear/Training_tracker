@@ -2,6 +2,9 @@ package com.example.sporttracker.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -27,7 +30,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-
 class WorkoutViewModel(
     private val dao: WorkoutDao,
     application: Application,
@@ -51,7 +53,7 @@ class WorkoutViewModel(
     val defaultTarget: StateFlow<Int> = _defaultTarget.asStateFlow()
 
     private val _language = MutableStateFlow(
-        prefs.getString("language", "ru") ?: "ru"
+        prefs.getString("language", "RU") ?: "EN"
     )
     val language: StateFlow<String> = _language.asStateFlow()
 
@@ -152,6 +154,12 @@ class WorkoutViewModel(
 
     // --- Команды ---
 
+    fun changeLanguage(name: String){
+        _language.value = name
+        prefs.edit{putString("language", name)}
+        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(name)
+        AppCompatDelegate.setApplicationLocales(appLocale)
+    }
     //Изменение выбора упражнения
     fun addExercise(name: String) {
         viewModelScope.launch {
@@ -160,7 +168,7 @@ class WorkoutViewModel(
     }
     fun changeExercise(name:String){
         _exerciseName.value = name
-        prefs.edit().putString("last_exercise", name).apply()
+        prefs.edit{putString("last_exercise", name)}
     }
     // Удаление
     fun removeExercise(name: String) {

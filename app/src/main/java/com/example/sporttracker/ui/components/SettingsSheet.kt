@@ -1,15 +1,23 @@
 package com.example.sporttracker.ui.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,9 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,14 +48,21 @@ import com.example.sporttracker.ui.theme.AppTheme
 @Composable
 fun SettingsContent(
     defaultTarget: Int,
-    language: String,
     onDefaultTargetChanged: (Int) -> Unit,
-    onLanguageChanged: (String) -> Unit,
+    languages: List<String> =  listOf("EN", "UK", "RU"),
+    selectedLanguage: String,
+    onLanguageChange: (String) -> Unit,
     onDismiss: () -> Unit
 ){
     val focusManager = LocalFocusManager.current
 
-    var count by remember { mutableStateOf(0)}
+    val selectedIndex = languages.indexOf(selectedLanguage)
+
+    // Animate the position of the orange highlight
+    val animateOffset by animateFloatAsState(
+        targetValue = selectedIndex.toFloat(),
+        animationSpec = spring(stiffness = Spring.StiffnessLow)
+    )
 
     Column(
         modifier = Modifier
@@ -58,6 +71,7 @@ fun SettingsContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
         //Setting for set default target for training
         Box(
             modifier = Modifier
@@ -68,14 +82,17 @@ fun SettingsContent(
                 .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {
+            //Row with text "Set default target" and input box dor default target
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
+                //Box with text
                 Box(modifier = Modifier
-                    .size(width = 200.dp, height = 48.dp)
+                    .weight(0.7f)
+                    .height(48.dp)
                     //.background(Color.Red),
                     ,contentAlignment = Alignment.Center
                 ) {
@@ -87,11 +104,13 @@ fun SettingsContent(
                         color = Color.White
                     )
                 }
+                //Box for input
                 Box(modifier = Modifier
-                    .size(width = 88.dp, height = 48.dp)
+                    .weight(0.3f)
+                    .height(48.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.6f))
-                    .border(4.dp, Color.LightGray.copy(alpha = 0.6f), RoundedCornerShape(8.dp)),
+                    .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                    .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     BasicTextField(
@@ -134,17 +153,19 @@ fun SettingsContent(
                 .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ){
+            //First box in row - text, second - slider for choosing language
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
+                //Text box for user
                 Box(
                     modifier = Modifier
-                        .size(width = 200.dp, height = 48.dp)
-                    //.background(Color.Red),
-                    , contentAlignment = Alignment.Center
+                        .weight(0.6f)
+                        .height(48.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = stringResource(R.string.settings_language),
@@ -154,40 +175,47 @@ fun SettingsContent(
                         color = Color.White
                     )
                 }
+                //Slider box for choosing language
                 Box(
                     modifier = Modifier
-                        .size(width = 88.dp, height = 48.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White.copy(alpha = 0.6f))
-                        .border(4.dp, Color.LightGray.copy(alpha = 0.6f), RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
+                        .width(150.dp)
+                        .height(48.dp)
+                        .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                        .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
                 ) {
-                    BasicTextField(
-                        value = count.toString(),
-                        onValueChange = { newValue ->
-                            if (newValue.all { it.isDigit() } && newValue.length <= MAX_REPS_INPUT_TARGET_LENGTH) {
-                                count = newValue.toIntOrNull() ?: 0
-                            }
-                        },
-                        textStyle = MaterialTheme.typography.displaySmall.copy(
-                            color = Color.White,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Black,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 24.sp
-                        ),
-                        cursorBrush = SolidColor(Color.White),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { focusManager.clearFocus() }
-                        ),
+                    // 1. The Sliding Orange Background
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
+                            .fillMaxWidth(1f / languages.size) // Automatically calculates width!
+                            .fillMaxHeight()
+                            .padding(4.dp)
+                            // Use an offset percentage to move it
+                            .offset(x = (50.dp * animateOffset)) // Adjust this or use a more flexible method below
+                            .background(AppTheme.colors.primaryElementColor, RoundedCornerShape(20.dp))
                     )
+
+                    // 2. The Language Text Labels
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        languages.forEach { lang ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) { onLanguageChange(lang) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = lang,
+                                    style = AppTheme.fonts.montBold,
+                                    fontSize = 14.sp,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

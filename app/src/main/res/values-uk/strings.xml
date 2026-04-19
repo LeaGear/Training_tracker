@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sport Tracker</string>
+    <string name="dialog_new_workout_title">Нове тренування</string>
+    <string name="dialog_new_workout_label">Назва (напр. Віджимання)</string>
+    <string name="dialog_set_target_title">Введіть ціль на сьогодні</string>
+    <string name="dialog_set_target_label">Кількість</string>
+    <string name="btn_create">Створити</string>
+    <string name="btn_main_save">ЗБЕРЕГТИ</string>
+    <string name="btn_save">Зберегти</string>
+    <string name="btn_cancel">Скасувати</string>
+    <string name="box_makes">"Виконано: "</string>
+    <string name="box_target">Ціль: </string>
+    <string name="hold_to_delete">Утримуйте, щоб видалити</string>
+    <string name="hand_entering">Введіть вручну: </string>
+    <string name="btn_add_exercise">+ Додати вправу</string>
+    <string name="settings_set_default_target">Ціль за замовчуванням</string>
+    <string name="settings_language">Мова</string>
+    <string name="delete_text">Ви впевнені, що хочете видалити профіль цього тренування?</string>
+    <string name="delete_confirm">Видалити</string>
+    <string name="delete_title">Видалити вправу</string>
+</resources>

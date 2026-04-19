@@ -8,4 +8,6 @@ object WorkoutConstants {
     const val LARGE_REPS_THRESHOLD = 100
     const val STEP_SMALL = 5
     const val STEP_LARGE = 10
+
+    //const val LANGUAGE_LIST = listOf("EN", "UA", "RU")
 }
