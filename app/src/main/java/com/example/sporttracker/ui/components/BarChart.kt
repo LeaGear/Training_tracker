@@ -31,8 +31,10 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sporttracker.R
 import com.example.sporttracker.ui.theme.AppTheme
 import kotlinx.datetime.Month
 import java.time.format.TextStyle
@@ -61,6 +63,7 @@ fun SimpleBarChart(
     val completedDayEnd = AppTheme.colors.calendarCompletedStart // Light Green
     val progressDayStart = AppTheme.colors.calendarInProgressStart
     val progressDayEnd = AppTheme.colors.calendarInProgressEnd
+    val targetText = "${stringResource(R.string.box_target)}: $defaultTarget"
 
     // Используем LaunchedEffect, чтобы скролл сработал при запуске экрана
     LaunchedEffect(key1 = todayIndex) {
@@ -172,7 +175,7 @@ fun SimpleBarChart(
                         )
                     )
                     drawContext.canvas.nativeCanvas.drawText(
-                        "Цель: $defaultTarget",
+                        "$targetText",
                         10f,
                         targetLineY - 10f, // Чуть выше линии
                         Paint().apply {

@@ -58,6 +58,7 @@ fun SetTrackerCalendar(
         firstDayOfWeek = daysOfWeek.first()
     )
 
+
     Column(modifier = Modifier
         .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -71,8 +72,9 @@ fun SetTrackerCalendar(
         val monthYearText = "${monthName.replaceFirstChar { it.uppercase() }} ${visibleMonth.year}"
 
         //Заголовок календаря с информацией про год и месяц
+
         Box(modifier = Modifier
-            .size(height = 40.dp, width = 180.dp)
+            .size(180.dp, 40.dp)
             .clip(AppTheme.shapes.mainShape)
             .border(AppTheme.shapes.primaryBorder, AppTheme.shapes.mainShape)
             .background(AppTheme.colors.primaryElementColor),
@@ -85,6 +87,7 @@ fun SetTrackerCalendar(
                 color = Color.White
             )
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

@@ -77,9 +77,9 @@ fun SettingsContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(AppTheme.colors.settingsElement)
-                .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(16.dp)),
+                .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(30.dp)),
             contentAlignment = Alignment.Center
         ) {
             //Row with text "Set default target" and input box dor default target
@@ -93,7 +93,6 @@ fun SettingsContent(
                 Box(modifier = Modifier
                     .weight(0.7f)
                     .height(48.dp)
-                    //.background(Color.Red),
                     ,contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -108,7 +107,7 @@ fun SettingsContent(
                 Box(modifier = Modifier
                     .weight(0.3f)
                     .height(48.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(24.dp))
                     .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
                     .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp)),
                     contentAlignment = Alignment.Center
@@ -148,9 +147,9 @@ fun SettingsContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(30.dp))
                 .background(AppTheme.colors.settingsElement)
-                .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(16.dp)),
+                .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(30.dp)),
             contentAlignment = Alignment.Center
         ){
             //First box in row - text, second - slider for choosing language

@@ -10,9 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,14 +40,16 @@ import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
+import com.example.sporttracker.ui.components.SettingsContent
 import com.example.sporttracker.ui.components.SimpleBarChart
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     var showTargetDialog by remember { mutableStateOf(false) }
-
+    var showSettings by remember {mutableStateOf(false)}
 
     val defaultTarget by viewModel.defaultTarget.collectAsState()
     val exercises by viewModel.availableExercises.collectAsState()
@@ -55,7 +65,21 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val dateForChart by viewModel.dateForChart.collectAsState()
     val currentLanguage by viewModel.language.collectAsState()
 
-
+    if (showSettings) {
+        ModalBottomSheet(
+            onDismissRequest = { showSettings = false },
+            containerColor = AppTheme.colors.settingsBack.copy(alpha = 0.7f)
+        ) {
+            // сюда помещаешь содержимое настроек
+            SettingsContent(
+                defaultTarget = defaultTarget,
+                onDefaultTargetChanged = { viewModel.setDefaultTarget(it) },
+                selectedLanguage = currentLanguage,
+                onLanguageChange = { viewModel.changeLanguage(it) },
+                onDismiss = { showSettings = false }
+            )
+        }
+    }
     if (showTargetDialog) {
         SetTargetWindow(
             onDismiss = {showTargetDialog = false},
@@ -74,13 +98,31 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
         verticalArrangement = Arrangement.spacedBy(8.dp)
 
     ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
+        ){
+            IconButton(
+                modifier = Modifier.offset(y=(-10).dp),
+                onClick = { showSettings = true }
+            ) {
+                Icon(
+                    Icons.Default.Settings,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.White
+                )
+            }
+            SetTrackerCalendar(
+                selectedDate = selectedLocalDate,
+                onDateSelected = { localDate -> viewModel.changeDate(localDate)},
+                workoutByDate = allWorkouts,
+                language = currentLanguage
+            )
+        }
 
-        SetTrackerCalendar(
-            selectedDate = selectedLocalDate,
-            onDateSelected = { localDate -> viewModel.changeDate(localDate)},
-            workoutByDate = allWorkouts,
-            language = currentLanguage
-        )
+
+
 
         DropdownExerciseMenu(
             exercises = exercises,
