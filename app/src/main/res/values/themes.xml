@@ -7,7 +7,7 @@
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="android:windowBackground">@drawable/bg_day</item>
 
         <item name="windowSplashScreenBackground">@android:color/transparent</item>
 

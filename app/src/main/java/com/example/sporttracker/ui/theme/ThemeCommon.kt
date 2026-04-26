@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,12 +23,15 @@ val myCustomFontFamily = FontFamily(
 )
 // Описываем структуру цветов
 data class AppColors(
-    //val primaryElementColor: Brush,
+    val backgroundDrawable: Int, // Додаємо ID ресурсу зображення
     val primaryElementColor: Color,
     val calendarHighlight: Color,
     val primaryAccent: Color,
     val repsBorder: Color,
     val dropMenuElement: Brush,
+    val glassBackground: Color,
+    val textMainColor: Color,
+    val neonShadow: Shadow?,
 
     // Календарь — статус дня
     val calendarCompletedStart: Color,    // выполнено — градиент начало
@@ -43,7 +47,7 @@ data class AppColors(
     val calendarNotStartedBorder: Color,
 
     val calendarDefaultDay: Color,        // обычный день без цели
-    val calendarSelectedBorder: Color,    // рамка выбранного дня
+    val calendarDefaultBorder: Color,    // рамка выбранного дня
     val calendarOtherMonths: Color,
 
     val settingsBack: Color,
@@ -73,8 +77,8 @@ val LocalAppFonts = staticCompositionLocalOf<AppFonts> {
     error("No typography provided")
 }
 val LightPalette = AppColors(
+    backgroundDrawable = R.drawable.bg_day,
     primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.5f),
-    //primaryElementColor = Color(0xFFF27735).copy(alpha = 0.6f),
     calendarHighlight = Color(0xFFFF4081),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
@@ -84,6 +88,12 @@ val LightPalette = AppColors(
             Color(0xFFFF5E00).copy(alpha = 0.5f),
             Color(0xFFF27735).copy(alpha = 0.6f)
         )
+    ),
+    glassBackground = Color.White.copy(alpha = 0.6f),
+    textMainColor = Color(0xFFD3732F),
+    neonShadow = Shadow(
+        color = Color(0xFFD3732F),
+        blurRadius = 25f
     ),
 
     calendarCompletedStart = Color(0xFF00FF1E),
@@ -99,7 +109,7 @@ val LightPalette = AppColors(
     calendarNotStartedBorder = Color(0xFFB41717),
 
     calendarDefaultDay = Color(0xFFA4C3E0),
-    calendarSelectedBorder = Color(0xFFFF840B),
+    calendarDefaultBorder = Color(0xFFE0F4F6),
     calendarOtherMonths = Color(0xFF8D8D8D),
 
     settingsBack = Color(0xFFE0F4F6),
@@ -109,8 +119,8 @@ val LightPalette = AppColors(
     settingsBorder = Color(0xFF007A85).copy(alpha = 0.7f)
 )
 val DarkPalette = AppColors(
+    backgroundDrawable = R.drawable.bg_night,
     primaryElementColor = Color(0xFFFF5E00).copy(alpha = 0.5f),
-    //primaryElementColor = Color(0xFFF27735).copy(alpha = 0.6f),
     calendarHighlight = Color(0xFFFF79B0),
     primaryAccent = Color(0xFFFF840B),
     repsBorder = Color(0xFFB1CBE5),
@@ -120,6 +130,12 @@ val DarkPalette = AppColors(
                 Color(0xFFFF5E00).copy(alpha = 0.5f),
                 Color(0xFFF27735).copy(alpha = 0.6f)
             )
+    ),
+    glassBackground = Color.White.copy(alpha = 0.4f),
+    textMainColor = Color(0xFFF4B91D),
+    neonShadow = Shadow(
+        color = Color(0xFFE9A534),
+        blurRadius = 25f
     ),
 
     calendarCompletedStart = Color(0xFF00CC18),
@@ -134,9 +150,9 @@ val DarkPalette = AppColors(
     calendarNotStartedEnd = Color(0xFFAA1445),
     calendarNotStartedBorder = Color(0xFF991212),
 
-    calendarDefaultDay = Color(0xFF5C7A96),
-    calendarSelectedBorder = Color(0xFFFF840B),
-    calendarOtherMonths = Color(0xFF8D8D8D),
+    calendarDefaultDay = Color(0xFFA4C3E0),
+    calendarDefaultBorder = Color(0xFFE0F4F6),
+    calendarOtherMonths = Color(0xFFB6B2B2),
 
     settingsBack = Color(0xFF0D3B40),
     settingsElement = Brush.verticalGradient(

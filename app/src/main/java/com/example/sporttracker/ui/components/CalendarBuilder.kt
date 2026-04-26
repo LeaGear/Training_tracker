@@ -152,7 +152,7 @@ fun DayElement(
             listOf(colors.calendarDefaultDay.copy(alpha = 0.4f),
                 colors.calendarDefaultDay.copy(alpha = 0.4f))
         )
-        target == 0 -> SolidColor(AppTheme.colors.settingsBack.copy(alpha = 0.4f))
+        target == 0 -> SolidColor(AppTheme.colors.calendarDefaultDay.copy(alpha = 0.4f))
         total >= target -> Brush.linearGradient(
             listOf(colors.calendarCompletedStart, colors.calendarCompletedEnd)
         )
@@ -165,7 +165,7 @@ fun DayElement(
     }
 
     val dateBorder = when {
-        target == 0    -> colors.settingsBack
+        target == 0    -> colors.calendarDefaultBorder
         total >= target -> colors.calendarCompletedBorder
         total > 0      -> colors.calendarInProgressBorder
         else           -> colors.calendarNotStartedBorder

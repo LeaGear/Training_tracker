@@ -16,7 +16,9 @@
     <string name="btn_add_exercise">+ Додати вправу</string>
     <string name="settings_set_default_target">Ціль за замовчуванням</string>
     <string name="settings_language">Мова</string>
+    <string name="settings_theme">Тема</string>
     <string name="delete_text">Ви впевнені, що хочете видалити профіль цього тренування?</string>
     <string name="delete_confirm">Видалити</string>
     <string name="delete_title">Видалити вправу</string>
+    <string name="exercise_add">Додати</string>
 </resources>

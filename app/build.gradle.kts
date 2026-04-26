@@ -46,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     ksp {
         arg("room.generateKotlin", "true")
@@ -77,6 +78,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.compose.material:material-icons-extended")
 
     // ВАЖНО: Закомментируй или удали ВСЕ строки с libs.androidx.compose...
     // и ОБЯЗАТЕЛЬНО удали/закомментируй BOM:

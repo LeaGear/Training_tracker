@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,7 +39,7 @@ import com.example.sporttracker.R
 import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.SetTargetWindow
 import com.example.sporttracker.ui.components.SetTrackerCalendar
-import com.example.sporttracker.ui.components.SettingsContent
+import com.example.sporttracker.ui.components.SettingsBottomSheet
 import com.example.sporttracker.ui.components.SimpleBarChart
 import com.example.sporttracker.ui.theme.AppTheme
 import com.example.sporttracker.ui.viewmodel.WorkoutViewModel
@@ -64,22 +63,21 @@ fun HistoryCalendarScreen(viewModel: WorkoutViewModel){
     val currentTotal = sets.sumOf { it.reps }
     val dateForChart by viewModel.dateForChart.collectAsState()
     val currentLanguage by viewModel.language.collectAsState()
+    val currentTheme by viewModel.themeMode.collectAsState()
 
     if (showSettings) {
-        ModalBottomSheet(
-            onDismissRequest = { showSettings = false },
-            containerColor = AppTheme.colors.settingsBack.copy(alpha = 0.7f)
-        ) {
             // сюда помещаешь содержимое настроек
-            SettingsContent(
+            SettingsBottomSheet(
                 defaultTarget = defaultTarget,
                 onDefaultTargetChanged = { viewModel.setDefaultTarget(it) },
+                selectedTheme = currentTheme,
+                onThemeChange = {viewModel.setTheme(it)},
                 selectedLanguage = currentLanguage,
                 onLanguageChange = { viewModel.changeLanguage(it) },
                 onDismiss = { showSettings = false }
             )
-        }
     }
+
     if (showTargetDialog) {
         SetTargetWindow(
             onDismiss = {showTargetDialog = false},

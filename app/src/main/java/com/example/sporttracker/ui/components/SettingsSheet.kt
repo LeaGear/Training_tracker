@@ -17,11 +17,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrightnessAuto
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +55,9 @@ import com.example.sporttracker.ui.theme.AppTheme
 fun SettingsContent(
     defaultTarget: Int,
     onDefaultTargetChanged: (Int) -> Unit,
+    themes: List<String> = listOf("LIGHT", "DARK", "SYSTEM"),
+    selectedTheme: String,
+    onThemeChange: (String) -> Unit,
     languages: List<String> =  listOf("EN", "UK", "RU"),
     selectedLanguage: String,
     onLanguageChange: (String) -> Unit,
@@ -56,11 +65,17 @@ fun SettingsContent(
 ){
     val focusManager = LocalFocusManager.current
 
-    val selectedIndex = languages.indexOf(selectedLanguage)
+    val selectedIndexLanguage = languages.indexOf(selectedLanguage)
+    val selectedIndexThemes = themes.indexOf(selectedTheme)
 
     // Animate the position of the orange highlight
-    val animateOffset by animateFloatAsState(
-        targetValue = selectedIndex.toFloat(),
+    val animateOffsetLanguage by animateFloatAsState(
+        targetValue = selectedIndexLanguage.toFloat(),
+        animationSpec = spring(stiffness = Spring.StiffnessLow)
+    )
+
+    val animateOffsetTheme by animateFloatAsState(
+        targetValue = selectedIndexThemes.toFloat(),
         animationSpec = spring(stiffness = Spring.StiffnessLow)
     )
 
@@ -189,7 +204,7 @@ fun SettingsContent(
                             .fillMaxHeight()
                             .padding(4.dp)
                             // Use an offset percentage to move it
-                            .offset(x = (50.dp * animateOffset)) // Adjust this or use a more flexible method below
+                            .offset(x = (50.dp * animateOffsetLanguage)) // Adjust this or use a more flexible method below
                             .background(AppTheme.colors.primaryElementColor, RoundedCornerShape(20.dp))
                     )
 
@@ -211,6 +226,85 @@ fun SettingsContent(
                                     style = AppTheme.fonts.montBold,
                                     fontSize = 14.sp,
                                     color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //Box for theme choosing
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .clip(RoundedCornerShape(30.dp))
+                .background(AppTheme.colors.settingsElement)
+                .border(3.dp, AppTheme.colors.settingsBorder, RoundedCornerShape(30.dp)),
+            contentAlignment = Alignment.Center
+        ){
+            //First box in row - text, second - slider for choosing language
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                //Text box for user
+                Box(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .height(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_theme),
+                        textAlign = TextAlign.Center,
+                        style = AppTheme.fonts.montBold,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+                //Slider box for choosing language
+                Box(
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(48.dp)
+                        .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                        .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(50.dp) // Automatically calculates width!
+                            .fillMaxHeight()
+                            .padding(4.dp)
+                            // Use an offset percentage to move it
+                            .offset(x = (50.dp * animateOffsetTheme)) // Adjust this or use a more flexible method below
+                            .background(AppTheme.colors.primaryElementColor, RoundedCornerShape(20.dp))
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        themes.forEach { theme ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) { onThemeChange(theme) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = when (theme) {
+                                        "LIGHT" -> Icons.Default.LightMode
+                                        "DARK" -> Icons.Default.DarkMode
+                                        else -> Icons.Default.BrightnessAuto
+                                    },
+                                    contentDescription = theme,
+                                    modifier = Modifier.size(32.dp).padding(2.dp),
+                                    tint = Color.White
                                 )
                             }
                         }

@@ -44,7 +44,9 @@ class WorkoutViewModel(
     private val _selectedDate = MutableStateFlow(getStartOfDay(System.currentTimeMillis()))
     val selectedDate: StateFlow<Long> = _selectedDate.asStateFlow()
 
-    private val _exerciseName = MutableStateFlow(prefs.getString("last_exercise", null) ?: "Добавить")
+    private val _exerciseName = MutableStateFlow(
+        prefs.getString("last_exercise", null) ?: "¯\\_(ツ)_/¯"
+    )
     val exerciseName: StateFlow<String> = _exerciseName.asStateFlow()
 
     private val _defaultTarget = MutableStateFlow(
@@ -53,9 +55,14 @@ class WorkoutViewModel(
     val defaultTarget: StateFlow<Int> = _defaultTarget.asStateFlow()
 
     private val _language = MutableStateFlow(
-        prefs.getString("language", "RU") ?: "EN"
+        prefs.getString("language", "EN") ?: "EN"
     )
     val language: StateFlow<String> = _language.asStateFlow()
+
+    private val _themeMode = MutableStateFlow(
+        prefs.getString("current_theme", "SYSTEM") ?: "SYSTEM"
+    )
+    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
     // --- Производные данные ---
 
@@ -176,9 +183,9 @@ class WorkoutViewModel(
             dao.deleteExercise(Exercise(name))
             if (_exerciseName.value == name){
                 val remaining = dao.getAllExercisesOnce()
-                val newName = remaining.lastOrNull()?.name ?: "Добавить"
+                val newName = remaining.lastOrNull()?.name ?: "¯\\_(ツ)_/¯"
                 _exerciseName.value = newName
-                prefs.edit().putString("last_exercise", newName).apply()
+                prefs.edit { putString("last_exercise", newName) }
             }
         }
     }
@@ -243,17 +250,16 @@ class WorkoutViewModel(
         _count.value = (_count.value + by).coerceAtLeast(0)
     }
 
-    fun resetCount() {
-        _count.value = 0
-    }
     fun setDefaultTarget(value: Int){
         _defaultTarget.value = value
-        prefs.edit().putInt("default_target", value). apply()
+        prefs.edit{putInt("default_target", value) }
     }
-    fun setLanguage(lang:String){
-        _language.value = lang
-        prefs.edit().putString("language", lang).apply()
+
+    fun setTheme(mode:String){
+        _themeMode.value = mode
+        prefs.edit{putString("current_theme", mode)}
     }
+
 }
 
 class WorkoutViewModelFactory(

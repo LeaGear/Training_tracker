@@ -34,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,12 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -65,7 +64,7 @@ import com.example.sporttracker.ui.components.AddSubtractButtons
 import com.example.sporttracker.ui.components.DropdownExerciseMenu
 import com.example.sporttracker.ui.components.RecordButton
 import com.example.sporttracker.ui.components.SetTargetWindow
-import com.example.sporttracker.ui.components.SettingsContent
+import com.example.sporttracker.ui.components.SettingsBottomSheet
 import com.example.sporttracker.ui.components.WorkoutConstants.LARGE_REPS_THRESHOLD
 import com.example.sporttracker.ui.components.WorkoutConstants.MAX_REPS_INPUT_LENGTH
 import com.example.sporttracker.ui.components.WorkoutConstants.STEP_LARGE
@@ -79,12 +78,14 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val haptic = LocalHapticFeedback.current
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     val formattedDate by viewModel.formattedDate.collectAsState()
 
     //Settings information
     val defaultTarget by viewModel.defaultTarget.collectAsState()
     val language by viewModel.language.collectAsState()
+    val currentTheme by viewModel.themeMode.collectAsState()
 
     var showTargetDialog by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
@@ -100,20 +101,18 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
     val currentSets = workoutData?.sets ?: emptyList()
 
     if (showSettings) {
-        ModalBottomSheet(
-            onDismissRequest = { showSettings = false },
-            containerColor = AppTheme.colors.settingsBack.copy(alpha = 0.7f)
-        ) {
             // сюда помещаешь содержимое настроек
-            SettingsContent(
+            SettingsBottomSheet(
                 defaultTarget = defaultTarget,
                 onDefaultTargetChanged = { viewModel.setDefaultTarget(it) },
+                selectedTheme = currentTheme,
+                onThemeChange = {viewModel.setTheme(it)},
                 selectedLanguage = language,
                 onLanguageChange = { viewModel.changeLanguage(it) },
                 onDismiss = { showSettings = false }
             )
-        }
     }
+
     if (showTargetDialog) {
         SetTargetWindow(
             onDismiss = { showTargetDialog = false },
@@ -211,7 +210,7 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                     modifier = Modifier
                         .size(176.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.6f))
+                        .background(AppTheme.colors.glassBackground)
                 )
                 CircularProgressIndicator(
                     progress = { currentTotal.toFloat() / targetInDay.toFloat() },
@@ -226,22 +225,22 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
                 ) {
                     Text(
                         text = stringResource(R.string.box_makes),
-                        style = AppTheme.fonts.sekuyaBold,
+                        style = AppTheme.fonts.sekuyaBold.copy(shadow = AppTheme.colors.neonShadow),
                         fontSize = 18.sp,
-                        color = Color(0xFFD3732F)
+                        color = AppTheme.colors.textMainColor
                     )
                     Text(
                         text = currentTotal.toString(),
-                        style = AppTheme.fonts.sekuyaBold,
+                        style = AppTheme.fonts.sekuyaBold.copy(shadow = AppTheme.colors.neonShadow),
                         fontSize = 40.sp,
-                        color = Color(0xFFD3732F)
+                        color = AppTheme.colors.textMainColor
                     )
                     Divider(modifier = Modifier.width(70.dp).padding(vertical = 4.dp))
                     Text(
                         text = "${stringResource(R.string.box_target)} $targetInDay",
-                        style = AppTheme.fonts.sekuyaBold,
+                        style = AppTheme.fonts.sekuyaBold.copy(shadow = AppTheme.colors.neonShadow),
                         fontSize = 18.sp,
-                        color = Color(0xFFD3732F)
+                        color = AppTheme.colors.textMainColor
                     )
                 }
             }
@@ -249,16 +248,12 @@ fun PushUpCounterScreen(viewModel : WorkoutViewModel) {
             //Window with sets and count of sets
             Box(
                 modifier = Modifier
-                    .size(width = 309.dp, height = 156.dp)
+                    .width(screenWidth * 0.7f)
+                    .aspectRatio(2.2f)
                     .clip(AppTheme.shapes.mainShape)
                     .border(4.dp, AppTheme.colors.repsBorder.copy(alpha = 0.4f), AppTheme.shapes.mainShape)
+                    .background(AppTheme.colors.glassBackground)
             ) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.White.copy(alpha = 0.4f))
-                        .blur(12.dp)
-                )
                 val holdToDeleteText = stringResource(R.string.hold_to_delete)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(6),

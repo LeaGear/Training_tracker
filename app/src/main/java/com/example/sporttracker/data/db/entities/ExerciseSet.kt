@@ -9,3 +9,4 @@ data class ExerciseSet(
     val parentWorkoutId: Int,
     val reps: Int
 )
+//TODO: If i want deploy this program, need to change parentWorkoutId and add cascade delete now program saving all data
